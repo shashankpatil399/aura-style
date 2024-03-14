@@ -1,38 +1,59 @@
 const otpGenerator = require('otp-generator');
-const OTP = require('../models/otpModels');
-const auraUser = require('../models/signupmodels');
+const nodemailer = require('nodemailer');
 
-exports.sendOTP = async (req, res) => {
-  try {
-    const { email } = req.body.emailId
-    const checkUserPresent = await auraUser.findOne({ email });
-    if (checkUserPresent) {
-      return res.status(401).json({
-        success: false,
-        message: 'User is already registered',
-      });
-    }
-    let otp = otpGenerator.generate(6, {
-      upperCaseAlphabets: false,
-      lowerCaseAlphabets: false,
-      specialChars: false,
+function sendOTP(req, res) {
+
+    const transporter = nodemailer.createTransport({
+        
+
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: 'tjerry548@gmail.com',
+            pass: 'mgeswrvfvgofsnnl'
+        }
     });
-    let result = await OTP.findOne({ otp: otp });
-    while (result) {
-      otp = otpGenerator.generate(6, {
-        upperCaseAlphabets: false,
-      });
-      result = await OTP.findOne({ otp: otp });
+ 
+    const { emailId } = req.body;
+    if (!emailId) {
+        return res.status(400).json({ error: 'Email address is required' });
     }
-    const otpPayload = { email, otp };
-    const otpBody = await OTP.create(otpPayload);
-    res.status(200).json({
-      success: true,
-      message: 'OTP sent successfully',
-      otp,
+    const otp = otpGenerator.generate(6, { digits: true, lowerCaseAlphabets: false, alphabets: false, upperCase: false, specialChars: false });
+console.log(emailId,"email");
+console.log("otp",otp);
+
+    const mailOptions = {
+        from: 'tjerry548@gmail.com',
+        to: emailId,
+        subject: 'OTP Verification',
+        text: `Your OTP for verification is: ${otp}`
+    };
+
+ transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log('Error occurred while sending email:', error);
+            return res.status(500).json({ error: 'Error occurred while sending email' });
+        } else {
+            console.log('Email sent successfully:', info.response);
+            return res.status(200).json({ message: 'Email sent successfully' });
+        }
     });
-  } catch (error) {
-    console.log(error.message);
-    return res.status(500).json({ success: false, error: error.message });
-  }
+
+}
+
+module.exports = {
+    sendOTP
 };
+ 
+
+
+
+
+
+
+
+
+
+
+

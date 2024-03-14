@@ -22,6 +22,9 @@ password : {
 },
 confirmPassword : {
     type : String
+},
+otp : {
+    type : String
 }
 
 })
