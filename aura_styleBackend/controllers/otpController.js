@@ -6,7 +6,7 @@ function sendOTP(req, res) {
     const transporter = nodemailer.createTransport({
         
 
-        host: 'smtp.gmail.com',
+        host:'smtp.gmail.com',
         port: 465,
         secure: true,
         auth: {
@@ -20,8 +20,7 @@ function sendOTP(req, res) {
         return res.status(400).json({ error: 'Email address is required' });
     }
     const otp = otpGenerator.generate(6, { digits: true, lowerCaseAlphabets: false, alphabets: false, upperCase: false, specialChars: false });
-console.log(emailId,"email");
-console.log("otp",otp);
+
 
     const mailOptions = {
         from: 'tjerry548@gmail.com',
