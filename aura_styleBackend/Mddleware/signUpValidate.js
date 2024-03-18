@@ -1,20 +1,24 @@
-const { body, validationResult } = require('express-validator');
-
-const  signUpValidate = [
-    body("firstName").not().trim().notEmpty().withMessage('Invalid First Name'),
-    body("lastName").notEmpty().trim().withMessage('Invalid Last Name'), 
-  body('emailId').isEmail().trim().withMessage('Invalid email format'),
-
-  body('password').trim().matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/).withMessage('Password must include at least one uppercase letter, one lowercase letter, and one number'),
-
-  body('mobileNo').trim().isMobilePhone().withMessage("Invalid Mobile No."),
-];
-
-const validate = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+const yup = require("yup")
+const signUpValidate = yup.object().shape({
+    firstName: yup.string().required('First Name is required'),
+    lastName: yup.string().required('Last Name is required'),
+    emailId: yup.string().email('Invalid email').required('Email is required'),
+    mobileNo: yup.string().required('Mobile No. is required'),
+    password: yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
+    confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match')
+});
+const validate = async (req, res, next) => {
+  try {
+      await signUpValidate.validate(req.body, { abortEarly: false });
+      next();
+  } catch (error) {
+      return res.status(400).json({ errors: error.errors });
   }
-  next();
 };
-module.exports = { signUpValidate, validate };
+module.exports = {validate };
+
+
+
+
+
+

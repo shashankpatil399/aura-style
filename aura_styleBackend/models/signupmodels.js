@@ -10,7 +10,6 @@ lastName : {
 
     type:  String
 },
-
 emailId : {
     type : String
 },
@@ -23,10 +22,9 @@ password : {
 confirmPassword : {
     type : String
 },
+
 otp : {
     type : String
 }
-
 })
-
 module.exports = mongoose.model("auraUser",AuraUser)
