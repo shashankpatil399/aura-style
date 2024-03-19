@@ -22,9 +22,9 @@ password : {
 confirmPassword : {
     type : String
 },
-
 otp : {
-    type : String
+    type : String,
+    default : ""
 }
 })
 module.exports = mongoose.model("auraUser",AuraUser)

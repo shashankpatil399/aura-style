@@ -2,15 +2,14 @@ const mongoose = require("mongoose")
 const AuraUser = require("../models/signupmodels")
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken');
-
 async function login(req, res) {
   try {
     const { emailId, password } = req.body;
     console.log("password", password);
     const user = await AuraUser.findOne({emailId : emailId});
     console.log("user", user);
-    if (!user) {
-      return res.status(404).json({ error: 'user Not Found' });
+    if(!user){
+        return res.status(404).json({ error: 'user Not Found' });
     }
 
     const passwordMatch =await  bcrypt.compare(password, user.password);

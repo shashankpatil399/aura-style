@@ -7,7 +7,7 @@ import { TextField, Button, Typography, Container, Grid, Box } from '@mui/materi
 import * as Yup from 'yup';
 import { useNavigate } from "react-router-dom";
 
-const validationSchema = Yup.object().shape({
+    const validationSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
     lastName: Yup.string().required('Last Name is required'),
     emailId: Yup.string().email('Invalid email').required('Email is required'),

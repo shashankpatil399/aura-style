@@ -2,15 +2,24 @@ const mongoose = require("mongoose")
 const AuraUser = require("../models/signupmodels")
 const bcrypt = require("bcrypt")
 
-const Signup = async (req, res) => {
+const Signup =  async (req, res) => {
 
-  const password = req.body?.password
+const password = req.body?.password
 const confirmPassword = req.body?.confirmPassword
 const saltRounds = 10;
 const hashedPassword = await bcrypt.hash(password, saltRounds);
 const confirmHashedPassword = await bcrypt.hash(confirmPassword, saltRounds);
 
 try {
+  const data = new AuraUser({
+    firstName:       req.body?.firstName,
+    lastName:        req.body?.lastName,
+    emailId:         req.body?.emailId,
+    mobileNo:        req.body?.mobileNo, 
+    password:        hashedPassword,
+    confirmPassword: confirmHashedPassword,
+  });
+  console.log("data",data);
 const exist = await AuraUser.findOne({emailId:req.body?.emailId}) 
     if (exist) {
       return res.status(409).json({
@@ -28,14 +37,7 @@ const exist = await AuraUser.findOne({emailId:req.body?.emailId})
   });
 
 }
-    const data = new AuraUser({
-      firstName: req.body?.firstName,
-      lastName: req.body?.lastName,
-      emailId: req.body?.emailId,
-      mobileNo: req.body?.mobileNo,
-      password: hashedPassword,
-      confirmPassword: confirmHashedPassword,
-    });
+    
 
 
     const savedUser = await data.save();
