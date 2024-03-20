@@ -3,8 +3,6 @@ const AuraUser = require("../models/signupmodels")
 const otpGenerator = require('otp-generator');
 const nodemailer = require('nodemailer');
 
-
-
 const forgetPass = async (req, res) => {
 
     const emailId = req.body.emailId
@@ -57,7 +55,7 @@ const forgetPass = async (req, res) => {
             return res.status(200).json({ message: 'Email sent successfully' });
         }
     });
-}
+    }
 
 
 const verifyOtp = async (req, res) => {
@@ -79,6 +77,6 @@ const verifyOtp = async (req, res) => {
             message: "invalid otp"
         })
     }
-}
+    }
 
-module.exports = { forgetPass, verifyOtp }
+module.exports = { forgetPass, verifyOtp}

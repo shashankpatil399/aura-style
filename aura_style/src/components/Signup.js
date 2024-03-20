@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from 'react-router-dom';
 import axios from "axios";
@@ -37,7 +36,7 @@ export default function Signup() {
 
             if (response.status === 200) {
                 console.log('Register successful');
-                navigate("/");
+                navigate("/Login");
             } else {
                 console.log('Invalid credentials or unexpected response status:', response.status);
             }
@@ -45,8 +44,7 @@ export default function Signup() {
             console.error('Error:', error);
         }
         setSubmitting(false);
-    }
-
+  }
     return (
         <Container maxWidth="xs" style={{ backgroundColor: '#f0f0f0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Box sx={{
@@ -56,7 +54,7 @@ export default function Signup() {
                 marginTop: 4,
                 bgcolor: 'rgba(255, 153, 153, 0.4)',
             }}>
-                <Typography variant="h4" align="center" gutterBottom>
+                <Typography variant="h4" style={{ fontFamily: "'Marck Script', cursive" }} align="center" gutterBottom>
                     Register YourSelf At AuraStyle 🧥
                 </Typography>
                 <Formik
