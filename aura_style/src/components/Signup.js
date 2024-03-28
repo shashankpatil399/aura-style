@@ -1,12 +1,14 @@
-import React from "react";
+
+import {React,useState} from "react";
 import { Link } from 'react-router-dom';
 import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { TextField, Button, Typography, Container, Grid, Box } from '@mui/material';
 import * as Yup from 'yup';
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
 
-    const validationSchema = Yup.object().shape({
+const validationSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
     lastName: Yup.string().required('Last Name is required'),
     emailId: Yup.string().email('Invalid email').required('Email is required'),
@@ -14,6 +16,10 @@ import { useNavigate } from "react-router-dom";
     password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
     confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match')
 });
+
+const ValidationMessage = ({ children }) => (
+    <span style={{ color: 'red' }}>{children}</span>
+);
 
 export default function Signup() {
     const navigate = useNavigate();
@@ -25,7 +31,7 @@ export default function Signup() {
         password: "",
         confirmPassword: ""
     };
-
+    const [registrationSuccess, setRegistrationSuccess] = useState(false);
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
             const response = await axios.post('http://localhost:8040/Signup', values, {
@@ -36,6 +42,8 @@ export default function Signup() {
 
             if (response.status === 200) {
                 console.log('Register successful');
+                toast.success('Registration successful!');
+                setRegistrationSuccess(true);
                 navigate("/Login");
             } else {
                 console.log('Invalid credentials or unexpected response status:', response.status);
@@ -44,9 +52,11 @@ export default function Signup() {
             console.error('Error:', error);
         }
         setSubmitting(false);
-  }
+    };
+
     return (
         <Container maxWidth="xs" style={{ backgroundColor: '#f0f0f0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <ToastContainer />
             <Box sx={{
                 boxShadow: '0px 5px 15px 0px rgba(0,0,0,0.9)',
                 p: 3,
@@ -55,7 +65,7 @@ export default function Signup() {
                 bgcolor: 'rgba(255, 153, 153, 0.4)',
             }}>
                 <Typography variant="h4" style={{ fontFamily: "'Marck Script', cursive" }} align="center" gutterBottom>
-                    Register YourSelf At AuraStyle 🧥
+                    Register Yourself At AuraStyle 🧥
                 </Typography>
                 <Formik
                     initialValues={initialValues}
@@ -73,7 +83,7 @@ export default function Signup() {
                                         name="firstName"
                                         placeholder="Enter Your First Name"
                                     />
-                                    <ErrorMessage name="firstName" component="div" />
+                                    <ErrorMessage name="firstName" component={ValidationMessage} />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
                                     <Field
@@ -83,7 +93,7 @@ export default function Signup() {
                                         name="lastName"
                                         placeholder="Enter Your Last Name"
                                     />
-                                    <ErrorMessage name="lastName" component="div" />
+                                    <ErrorMessage name="lastName" component={ValidationMessage} />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Field
@@ -93,7 +103,7 @@ export default function Signup() {
                                         name="emailId"
                                         placeholder="Enter Your Email"
                                     />
-                                    <ErrorMessage name="emailId" component="div" />
+                                    <ErrorMessage name="emailId" component={ValidationMessage} />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Field
@@ -103,7 +113,7 @@ export default function Signup() {
                                         name="mobileNo"
                                         placeholder="Enter Your Mobile Number"
                                     />
-                                    <ErrorMessage name="mobileNo" component="div" />
+                                    <ErrorMessage name="mobileNo" component={ValidationMessage}/>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Field
@@ -114,7 +124,7 @@ export default function Signup() {
                                         name="password"
                                         placeholder="Enter Your Password"
                                     />
-                                    <ErrorMessage name="password" component="div" />
+                                    <ErrorMessage name="password" component={ValidationMessage} />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Field
@@ -125,7 +135,7 @@ export default function Signup() {
                                         name="confirmPassword"
                                         placeholder="Confirm Password"
                                     />
-                                    <ErrorMessage name="confirmPassword" component="div" />
+                                    <ErrorMessage name="confirmPassword" component={ValidationMessage} />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Button
@@ -143,10 +153,9 @@ export default function Signup() {
                     )}
                 </Formik>
                 <Typography variant="body2">
-                    Already have an account?{' '}
-                    <Link to="/Login" style={{ textDecoration: 'none', color: 'blue' }}>Login</Link> {}
-                </Typography>
-            </Box>
+                Already have an account?{' '}
+                  <Link to="/Login" style={{ textDecoration: 'none', color: 'blue' }}>Login</Link> {}               </Typography>
+           </Box>
         </Container>
     );
 }

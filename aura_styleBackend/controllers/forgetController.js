@@ -57,20 +57,15 @@ const forgetPass = async (req, res) => {
     });
     }
 
-
 const verifyOtp = async (req, res) => {
     const { otp } = req.body
     const existOtp = await AuraUser.findOne({ otp: otp })
-    
-    
     if (existOtp) {
         return res.status(202).json({
             status: 200,
             message: "otp validate"
         })
     }
-    
-    
     else {
         return res.status(404).json({
             status: 404,
@@ -78,5 +73,4 @@ const verifyOtp = async (req, res) => {
         })
     }
     }
-
 module.exports = { forgetPass, verifyOtp}

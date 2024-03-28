@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom'
 import { TextField, Button, Typography, Container, Box, Grid, } from '@mui/material';
 import axios from 'axios';
+import HeaderBar from './HeaderBar';
 
 const Forget = () => {
     const navigate = useNavigate()
@@ -11,7 +12,7 @@ const Forget = () => {
     const initialValues = {
 
         emailId: '',
-        otp: '',
+        otp:     '',
 
     }
     const validationSchema = Yup.object().shape({
@@ -72,18 +73,16 @@ const Forget = () => {
 
             console.log("error", error);
         }
-
-
-
     };
-
     return (
+        <>
+        <HeaderBar/>
         <Container maxWidth="xs" style={{ backgroundColor: '#f0f0f0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <Box sx={{
                 boxShadow: '0px 5px 15px 0px rgba(0,0,0,0.9)',
                 p: 7,
                 borderRadius: 4,
-                marginTop: 10,
+                marginTop: 0,
                 bgcolor: 'rgba(255, 153, 153, 0.4)',
             }}>
                 <div className="App">
@@ -170,7 +169,7 @@ const Forget = () => {
         </Container>
 
 
-
+        </>
     );
 };
 export default Forget;

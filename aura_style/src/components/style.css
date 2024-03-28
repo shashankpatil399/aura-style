@@ -1,0 +1,15 @@
+/* /* table { table-layout: fixed;
+    border: 3px solid purple;
+      }
+    
+      th,td {
+        border: 1px solid;
+        padding: 8px;
+        border: 3px solid purple
+      }
+     th{
+        border: 3px solid purple;
+        background-color: blueviolet;
+     }
+     */
+
