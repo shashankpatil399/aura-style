@@ -1,8 +1,32 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const AuraUser = require("../models/signupmodels");
+const Yup = require('yup');
+
+
+const validationSchema = Yup.object().shape({
+  oldPassword: Yup.string().required('oldPassword is required'),
+  newPassword: Yup.string().required('newPassword is required'),
+});
+
+
+const validateData = async (data) => {
+  try {
+      await validationSchema.validate(data, { abortEarly: false });
+      return { isValid: true, errors: null };
+  } catch (errors) {
+      return { isValid: false, errors: errors.inner.map(error => ({ [error.path]: error.message })) };
+  }
+};
+
 
 const changePass = async (req, res) => {
+
+  const { isValid, errors } = await validateData(req.body);
+  if (!isValid) {
+      return res.status(422).json({ errors });
+  }
+
   try {
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;

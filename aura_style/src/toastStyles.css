@@ -1,0 +1,25 @@
+/* toastStyles.css */
+.Toastify__toast-container {
+    z-index: 9999; /* Adjust the z-index as needed */
+  }
+  
+  .Toastify__toast--info {
+    background-color: #3498db; /* Change the background color for info toast */
+    color: #fff; /* Change the text color */
+  }
+  
+  .Toastify__toast--success {
+    background-color: #2ecc71; /* Change the background color for success toast */
+    color: #fff; /* Change the text color */
+  }
+  
+  .Toastify__toast--warning {
+    background-color: #e67e22; /* Change the background color for warning toast */
+    color: #fff; /* Change the text color */
+  }
+  
+  .Toastify__toast--error {
+    background-color: #e74c3c; /* Change the background color for error toast */
+    color: #fff; /* Change the text color */
+  }
+  

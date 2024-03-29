@@ -5,6 +5,8 @@ import { TextField, Button, Typography, Container, Grid, Box } from '@mui/materi
 import * as Yup from 'yup';
 import { useNavigate } from "react-router-dom";
 import HeaderBar from './HeaderBar'
+import { toast } from 'react-toastify';
+
 
 
 const getToken = () => {
@@ -15,6 +17,10 @@ const validationSchema = Yup.object().shape({
     oldPassword: Yup.string().required('oldPassword is required'),
     newPassword: Yup.string().required('newPassword is required'),
 });
+
+const ValidationMessage = ({ children }) => (
+    <span style={{ color: 'red' }}>{children}</span>
+);
 
 function ChangePass() {
     const navigate = useNavigate();
@@ -46,9 +52,13 @@ function ChangePass() {
 
           
             if (response.status === 200) {
+               
+                    localStorage.removeItem('token'); // Remove the token from localStorage
+                    navigate("/Login");// Navigate to the Login page
+                  
                 console.log("password change successfully")
-
-                navigate('/Login')
+                toast.success('password change successful!');
+               
             }
             else if (response.data.status === 400) {
                 console.log("user Invalid");
@@ -56,6 +66,10 @@ function ChangePass() {
 
 
         } catch (error) {
+          if (error.response.status === 401) {
+            toast.error("old password is incorrect")
+                console.log("user Invalid");
+            }
             console.log(error, "error");
 
         }
@@ -104,7 +118,7 @@ function ChangePass() {
                                         placeholder="Enter Your Password"
                                         sx={{ padding: '2px', marginTop : 4}}
                                     />
-                                    <ErrorMessage name="oldPassword" component="div" />
+                                    <ErrorMessage name="oldPassword" component={ValidationMessage} />
                                 </Grid>
                                 <Grid item xs={12}>
                                 <Field
@@ -116,7 +130,7 @@ function ChangePass() {
                                         placeholder="Enter Your Password"
                                         sx={{ padding: '2px', marginTop : 4}}
                                     />
-                                    <ErrorMessage name="newPassword" component="div" />
+                                    <ErrorMessage name="newPassword" component={ValidationMessage} />
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Button

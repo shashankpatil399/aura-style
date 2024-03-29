@@ -2,15 +2,36 @@ const mongoose = require("mongoose")
 const AuraUser = require("../models/signupmodels")
 const otpGenerator = require('otp-generator');
 const nodemailer = require('nodemailer');
+const Yup = require('yup');
 
-const forgetPass = async (req, res) => {
+
+const validationSchema = Yup.object().shape({
+    emailId: Yup.string().email('Invalid email address').required('Required'),
+    otp: Yup.string().min(6, 'OTP must be 6 characters').max(6, 'OTP must be 6 characters').required('Required'),
+})
+
+const validateData = async (data) => {
+    try {
+        await validationSchema.validate(data, { abortEarly: false });
+        return { isValid: true, errors: null };
+    } catch (errors) {
+        return { isValid: false, errors: errors.inner.map(error => ({ [error.path]: error.message })) };
+    }
+  };
+
+const otpSend = async (req, res) => {
+    const { isValid, errors } = await validateData(req.body);
+    if (!isValid) {
+        return res.status(422).json({ errors });
+    }
+
 
     const emailId = req.body.emailId
     const exist = await AuraUser.findOne({ emailId: req.body?.emailId })
     console.log("email", emailId);
     if (!exist) {
-        return res.status(409).json({
-            status: 409,
+        return res.status(401).json({
+            status: 401,
             message: "user is not register",
             data: null
         })
@@ -58,6 +79,13 @@ const forgetPass = async (req, res) => {
     }
 
 const verifyOtp = async (req, res) => {
+
+    const { isValid, errors } = await validateData(req.body);
+    if (!isValid) {
+        return res.status(422).json({ errors });
+    }
+
+
     const { otp } = req.body
     const existOtp = await AuraUser.findOne({ otp: otp })
     if (existOtp) {
@@ -73,4 +101,4 @@ const verifyOtp = async (req, res) => {
         })
     }
     }
-module.exports = { forgetPass, verifyOtp}
+module.exports = { otpSend,verifyOtp}

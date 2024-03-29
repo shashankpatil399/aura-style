@@ -1,10 +1,12 @@
 import React from 'react';
-import { Formik } from 'formik';
+import { Formik,ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom'
 import { TextField, Button, Typography, Container, Box, Grid, } from '@mui/material';
 import axios from 'axios';
 import HeaderBar from './HeaderBar';
+import { toast } from 'react-toastify';
+
 
 const Forget = () => {
     const navigate = useNavigate()
@@ -12,13 +14,48 @@ const Forget = () => {
     const initialValues = {
 
         emailId: '',
-        otp:     '',
+        otp: '',
 
     }
     const validationSchema = Yup.object().shape({
         emailId: Yup.string().email('Invalid email address').required('Required'),
         otp: Yup.string().min(6, 'OTP must be 6 characters').max(6, 'OTP must be 6 characters').required('Required'),
     })
+    const ValidationMessage = ({ children }) => (
+        <span style={{ color: 'red' }}>{children}</span>
+    );
+
+    const handleSendOTP = async (values) => {
+        console.log(values);
+
+        try {
+            const url = "http://localhost:8040/otpSend";
+            const response = await axios.post(url, values, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            console.log(response.status)
+            if (response.status === 200) {
+                toast.success('OTP  Successfully');
+                console.log("success", response.data)
+
+
+            }
+            else if (response.status === 401) {
+                console.log("can not send otp because email is not register");
+
+            }
+
+
+        } catch (error) {
+            if (error.response.status === 401) {
+                toast.error("Email ID Invalid")
+            }
+            console.log("error", error);
+        }
+    };
+
 
     const handleFormSubmit = async (values) => {
         console.log(values);
@@ -32,8 +69,8 @@ const Forget = () => {
 
             console.log(response.status)
             if (response.status === 202) {
-
                 navigate('/Reset')
+                toast.success("otp successfull Verified")
             }
             else if (response.data.status === 402) {
                 console.log("email aleafy");
@@ -41,132 +78,114 @@ const Forget = () => {
 
 
         } catch (error) {
-            console.log(error, "error");
-
+            if (error.response.status === 404) {
+                toast.error("OTP INVALID")
+            }
+            else {
+                console.log(error, "error");
+            }
         }
 
     }
 
-    const handleSendOTP = async (values) => {
-        console.log(values);
 
-        try {
-            const url = "http://localhost:8040/forget";
-            const response = await axios.post(url, values, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-            console.log(response.data)
-            if (response.data.status === 200) {
-
-                console.log("success", response.data)
-
-            }
-            else if (response.data.status === 400) {
-
-                console.log("can not send otp because email is not register");
-            }
-
-
-        } catch (error) {
-
-            console.log("error", error);
-        }
-    };
     return (
         <>
-        <HeaderBar/>
-        <Container maxWidth="xs" style={{ backgroundColor: '#f0f0f0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <Box sx={{
-                boxShadow: '0px 5px 15px 0px rgba(0,0,0,0.9)',
-                p: 7,
-                borderRadius: 4,
-                marginTop: 0,
-                bgcolor: 'rgba(255, 153, 153, 0.4)',
-            }}>
-                <div className="App">
-                    <Typography variant="h4" style={{ fontFamily: "'Ojuju', sans-serif" }}>
-                        Reset password
-                    </Typography>
-                </div>
-                <Formik
-                    onSubmit={handleFormSubmit}
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onClick={handleSendOTP}
-                >
-                    {({
-                        values,
-                        errors,
-                        touched,
-                        handleBlur,
-                        handleChange,
-                        handleSubmit,
+            <HeaderBar />
+            <Container maxWidth="xs" style={{ backgroundColor: '#f0f0f0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <Box sx={{
+                    boxShadow: '0px 5px 15px 0px rgba(0,0,0,0.9)',
+                    p: 7,
+                    borderRadius: 4,
+                    marginTop: 0,
+                    bgcolor: 'rgba(255, 153, 153, 0.4)',
+                }}>
+                    <div className="App">
+                        <Typography variant="h4" style={{ fontFamily: "'Ojuju', sans-serif" }}>
+                            Reset password
+                        </Typography>
+                    </div>
+                    <Formik
+                        onSubmit={handleFormSubmit}
+                        initialValues={initialValues}
+                        validationSchema={validationSchema}
+                        onClick={handleSendOTP}
+                    >
+                        {({
+                            values,
+                            errors,
+                            touched,
+                            handleBlur,
+                            handleChange,
+                            handleSubmit,
 
-                        isSubmitting
-                    }) => (
+                            isSubmitting
+                        }) => (
 
-                        <form onSubmit={handleSubmit} >
-                            <Grid container spacing={2}>
-                                <Grid item xs={12}></Grid>
-                                <TextField
-
-                                    fullWidth
-                                    name="emailId"
-                                    label="emailId"
-                                    type="email"
-                                    onBlur={handleBlur}
-                                    onChange={handleChange}
-                                    value={values.emailId}
-                                    placeholder="Enter Your Email"
-                                    sx={{ padding: '2px', marginTop: 4 }}
-
-                                    error={touched.emailId && Boolean(errors.emailId)}
-                                    helperText={touched.emailId && errors.emailId}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                            </Grid>
-                                <Grid item xs={12}>
-                            <Button variant="contained"
-                                type="submit"
-                                fullWidth
-                                sx={{ bgcolor: 'rgba(255, 153, 153, 0.4)', color: '#000', padding: '2px', marginTop: 4 }}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleSendOTP(values, { isSubmitting });
-                                }}>
-
-                                {isSubmitting ? "Logging in..." : "otp send"}
-                            </Button>
-                            </Grid>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12}>
+                            <form onSubmit={handleSubmit} >
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12}></Grid>
                                     <TextField
-                                        sx={{ padding: '2px', marginTop: 4 }}
+
                                         fullWidth
-                                        name="otp"
-                                        label="OTP"
-                                        type="text"
+                                        name="emailId"
+                                        label="emailId"
+                                        type="email"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
-                                        value={values.otp}
-                                        disabled={isSubmitting}
-                                        error={touched.otp && Boolean(errors.otp)}
-                                        helperText={touched.otp && errors.otp}
-                                    />
-                                </Grid>
-                                <Button fullWidth type="submit" variant="contained" sx={{ bgcolor: 'rgba(255, 153, 153, 0.4)', color: '#000', padding: '2px', marginTop: 4 }}>
-                                    Verify OTP
-                                </Button>
-                            </Grid>
-                        </form>
-                    )}
-                </Formik>
-            </Box>
+                                        value={values.emailId}
+                                        placeholder="Enter Your Email"
+                                        sx={{ padding: '2px', marginTop: 4 }}
 
-        </Container>
+                                        error={touched.emailId && Boolean(errors.emailId)}
+                                        helperText={touched.emailId && errors.emailId}
+                                    />
+                                    <ErrorMessage name="emailId" component={ValidationMessage} />
+
+                                </Grid>
+                                <Grid item xs={12}>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Button variant="contained"
+                                        type="submit"
+                                        fullWidth
+                                        sx={{ bgcolor: 'rgba(255, 153, 153, 0.4)', color: '#000', padding: '2px', marginTop: 4 }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleSendOTP(values, { isSubmitting });
+                                        }}>
+
+                                        {isSubmitting ? "Logging in..." : "otp send"}
+                                    </Button>
+                                </Grid>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            sx={{ padding: '2px', marginTop: 4 }}
+                                            fullWidth
+                                            name="otp"
+                                            label="OTP"
+                                            type="text"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.otp}
+                                            disabled={isSubmitting}
+                                            error={touched.otp && Boolean(errors.otp)}
+                                            helperText={touched.otp && errors.otp}
+                                        />
+                                        <ErrorMessage name="otp" component={ValidationMessage} />
+
+                                    </Grid>
+                                    <Button fullWidth type="submit" variant="contained" sx={{ bgcolor: 'rgba(255, 153, 153, 0.4)', color: '#000', padding: '2px', marginTop: 4 }}>
+                                        Verify OTP
+                                    </Button>
+                                </Grid>
+                            </form>
+                        )}
+                    </Formik>
+                </Box>
+
+            </Container>
 
 
         </>

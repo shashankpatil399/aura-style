@@ -2,16 +2,15 @@ import React, { useEffect } from "react";
 import { Link } from 'react-router-dom';
 import Axios from 'axios';
 import HeaderBar from './HeaderBar';
+import { toast } from 'react-toastify';
 
 export default function Customer() {
   const [list, setList] = React.useState([]);
-  // const history = useHistory();
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('token') !== null;
 
     if (!isAuthenticated) {
-      // history.push("/Login");
     } else {
       Axios.get('http://localhost:8040/customer')
         .then((res) => setList(res.data))
@@ -27,6 +26,8 @@ export default function Customer() {
 
       if (response.data.status === 200) {
         window.location.reload();
+        toast.success('Delete successful!');
+        
       }
     } catch (error) {
       console.log('Error:', error);

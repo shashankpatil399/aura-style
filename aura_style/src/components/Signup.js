@@ -1,18 +1,30 @@
 
-import {React,useState} from "react";
+import {React} from "react";
 import { Link } from 'react-router-dom';
 import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { TextField, Button, Typography, Container, Grid, Box } from '@mui/material';
 import * as Yup from 'yup';
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from 'react-toastify';
+import { toast} from 'react-toastify';
+
 
 const validationSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
     lastName: Yup.string().required('Last Name is required'),
-    emailId: Yup.string().email('Invalid email').required('Email is required'),
-    mobileNo: Yup.string().required('Mobile No. is required'),
+    emailId : Yup.string().email('Invalid email format').test(
+        'isValidDomain',
+        'Invalid domain extension',
+        (value) => {
+          if (!value) return false; // If value is empty, return false
+          const domainParts = value.split('@')[1].split('.');
+          const domainExtension = domainParts[domainParts.length - 1];
+          return ['com', 'org', 'net'].includes(domainExtension.toLowerCase()); // Add more valid extensions if needed
+        }
+      ),
+ mobileNo: Yup.string()
+    .matches(/^[0-9]+$/, 'Must be only digits')
+    .required('Mobile No. is required'),
     password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
     confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match')
 });
@@ -31,7 +43,7 @@ export default function Signup() {
         password: "",
         confirmPassword: ""
     };
-    const [registrationSuccess, setRegistrationSuccess] = useState(false);
+ 
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
             const response = await axios.post('http://localhost:8040/Signup', values, {
@@ -43,20 +55,25 @@ export default function Signup() {
             if (response.status === 200) {
                 console.log('Register successful');
                 toast.success('Registration successful!');
-                setRegistrationSuccess(true);
+            
                 navigate("/Login");
             } else {
                 console.log('Invalid credentials or unexpected response status:', response.status);
             }
         } catch (error) {
+            toast.error("User Already Register")
             console.error('Error:', error);
+            
         }
-        setSubmitting(false);
+        finally{
+            setSubmitting(false);
+        }
+        
     };
 
     return (
         <Container maxWidth="xs" style={{ backgroundColor: '#f0f0f0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
             <Box sx={{
                 boxShadow: '0px 5px 15px 0px rgba(0,0,0,0.9)',
                 p: 3,

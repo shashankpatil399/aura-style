@@ -4,13 +4,18 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { TextField, Button, Typography, Container, Grid, Box } from '@mui/material';
 import * as Yup from 'yup';
 import { useNavigate, Link } from "react-router-dom";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+
+
 
 const validationSchema = Yup.object().shape({
     emailId: Yup.string().email('Invalid email').required('Email is required'),
-    password: Yup.string().required('Password is required'),
+    password: Yup.string().required('Password is required')
 });
+
+const ValidationMessage = ({ children }) => (
+    <span style={{ color: 'red' }}>{children}</span>
+);
 
 export default function Login() {
     const navigate = useNavigate();
@@ -34,28 +39,45 @@ export default function Login() {
                     'Content-Type': 'application/json',
                 },
             });
-
+    
             if (response.status === 200) {
                 tokenSave(response.data.token);
                 console.log('Login successful');
                 toast.success('Login successful!');
                 navigate("/Dashboard");
             } else {
-                console.log('Invalid credentials or unexpected response status:', response.status);
+                console.log('Unexpected response status:', response.status);
+                toast.error("An unexpected error occurred");
             }
         } catch (error) {
             console.error('Error:', error);
+    
+            if (error.response) {
+                const { status, data } = error.response;
+                console.log('Error response status:', status);
+                console.log('Error response data:', data);
+                
+                if (status === 404) {
+                    toast.error(data.error || "User not found !");
+                } else if (status === 401) {
+                    toast.error(data.error || "Incorrect password !");
+                } else {
+                    toast.error("An unexpected error occurred");
+                }
+            } else {
+                toast.error("An unexpected error occurred");
+            }
         }
+    
         setSubmitting(false);
     };
-
+    
     const tokenSave = (token) => {
         localStorage.setItem("token", token);
     };
 
     return (
         <Container maxWidth="xs" style={{ backgroundColor: '#f0f0f0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <ToastContainer />
             <Box sx={{
                 boxShadow: '0px 5px 15px 0px rgba(0,0,0,0.9)',
                 p: 7,
@@ -85,7 +107,7 @@ export default function Login() {
                                         placeholder="Enter Your Email"
                                         sx={{ padding: '2px', marginTop: 4 }}
                                     />
-                                    <ErrorMessage name="emailId" component="div" />
+                                    <ErrorMessage name="emailId" component={ValidationMessage} />
                                 </Grid>
                                 <Grid item xs={12}>
                                 </Grid>
@@ -99,7 +121,7 @@ export default function Login() {
                                         placeholder="Enter Your Password"
                                         sx={{ padding: '2px', marginTop: 4 }}
                                     />
-                                    <ErrorMessage name="password" component="div" />
+                                    <ErrorMessage name="password" component={ValidationMessage} />
                                 </Grid>
                                 <Grid item xs={12}>
                                 </Grid>
