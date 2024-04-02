@@ -9,12 +9,16 @@ firstName : {
 lastName : {
 
     type:  String
-},
+}, 
 emailId : {
     type : String
 },
  mobileNo :  { 
-    type : Number
+    type : String
+ },
+
+ image : {
+    type : String
  },
 password : {
  type : String

@@ -1,45 +1,10 @@
 const mongoose = require("mongoose")
 const AuraUser = require("../models/signupmodels")
 const bcrypt = require("bcrypt")
-const Yup = require('yup');
-
-
-
-
-const signupValidationSchema = Yup.object().shape({
-  firstName: Yup.string().required('First Name is required'),
-  lastName: Yup.string().required('Last Name is required'),
-  emailId : Yup.string().email('Invalid email format').test(
-      'isValidDomain',
-      'Invalid domain extension',
-      (value) => {
-        if (!value) return false; // If value is empty, return false
-        const domainParts = value.split('@')[1].split('.');
-        const domainExtension = domainParts[domainParts.length - 1];
-        return ['com', 'org', 'net'].includes(domainExtension.toLowerCase()); // Add more valid extensions if needed
-      }
-  ),
-  mobileNo: Yup.string()
-      .matches(/^[0-9]+$/, 'Must be only digits')
-      .required('Mobile No. is required'),
-  password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
-  confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match')
-});
-const validateSignupData = async (data) => {
-  try {
-      await signupValidationSchema.validate(data, { abortEarly: false });
-      return { isValid: true, errors: null };
-  } catch (errors) {
-      return { isValid: false, errors: errors.inner.map(error => ({ [error.path]: error.message })) };
-  }
-};
 
 const Signup =  async (req, res) => {
 
-  const { isValid, errors } = await validateSignupData(req.body);
-  if (!isValid) {
-      return res.status(422).json({ errors });
-  }
+
 
 const password = req.body?.password
 const confirmPassword = req.body?.confirmPassword
@@ -53,6 +18,7 @@ try {
     lastName:        req.body?.lastName,
     emailId:         req.body?.emailId,
     mobileNo:        req.body?.mobileNo,
+    image: req.file.originalname,  
     password:        hashedPassword,
     confirmPassword: confirmHashedPassword,
   });
@@ -75,8 +41,6 @@ const exist = await AuraUser.findOne({emailId:req.body?.emailId})
 
 }
     
-
-
     const savedUser = await data.save();
     res.status(200).json({
       status: 200,
@@ -95,5 +59,3 @@ const exist = await AuraUser.findOne({emailId:req.body?.emailId})
 };
 
 module.exports = { Signup };
-
-

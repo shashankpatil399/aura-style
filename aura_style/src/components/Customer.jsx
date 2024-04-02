@@ -9,7 +9,7 @@ export default function Customer() {
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('token') !== null;
-
+    
     if (!isAuthenticated) {
     } else {
       Axios.get('http://localhost:8040/customer')

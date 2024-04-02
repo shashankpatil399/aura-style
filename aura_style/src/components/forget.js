@@ -1,61 +1,54 @@
-import React from 'react';
-import { Formik,ErrorMessage } from 'formik';
+import React, { useState } from 'react';
+import { Formik, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom'
-import { TextField, Button, Typography, Container, Box, Grid, } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { TextField, Button, Typography, Container, Box, Grid } from '@mui/material';
 import axios from 'axios';
 import HeaderBar from './HeaderBar';
 import { toast } from 'react-toastify';
 
-
 const Forget = () => {
-    const navigate = useNavigate()
+    const [emailId, setEmailId] = useState(''); 
+    const navigate = useNavigate();
 
     const initialValues = {
-
         emailId: '',
         otp: '',
+    };
 
-    }
     const validationSchema = Yup.object().shape({
         emailId: Yup.string().email('Invalid email address').required('Required'),
         otp: Yup.string().min(6, 'OTP must be 6 characters').max(6, 'OTP must be 6 characters').required('Required'),
-    })
+    });
+
     const ValidationMessage = ({ children }) => (
         <span style={{ color: 'red' }}>{children}</span>
     );
 
     const handleSendOTP = async (values) => {
         console.log(values);
-
         try {
             const url = "http://localhost:8040/otpSend";
             const response = await axios.post(url, values, {
                 headers: {
                     "Content-Type": "application/json",
                 },
-            })
+            });
             console.log(response.status)
             if (response.status === 200) {
-                toast.success('OTP  Successfully');
-                console.log("success", response.data)
-
-
+                toast.success('OTP Sent Successfully');
+                console.log("success", response.data);
+         
+            } else if (response.status === 401) {
+                console.log("cannot send otp because email is not registered");
             }
-            else if (response.status === 401) {
-                console.log("can not send otp because email is not register");
-
-            }
-
-
         } catch (error) {
             if (error.response.status === 401) {
-                toast.error("Email ID Invalid")
+                toast.error("Invalid Email ID");
             }
             console.log("error", error);
         }
     };
-
 
     const handleFormSubmit = async (values) => {
         console.log(values);
@@ -65,29 +58,24 @@ const Forget = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-            })
+            });
 
             console.log(response.status)
             if (response.status === 202) {
-                navigate('/Reset')
-                toast.success("otp successfull Verified")
+                setEmailId(values.emailId); 
+                navigate(`/Reset?emailId=${values.emailId}`); 
+                toast.success("OTP successfully verified");
+            } else if (response.data.status === 402) {
+                console.log("email already exists");
             }
-            else if (response.data.status === 402) {
-                console.log("email aleafy");
-            }
-
-
         } catch (error) {
             if (error.response.status === 404) {
-                toast.error("OTP INVALID")
-            }
-            else {
+                toast.error("Invalid OTP");
+            } else {
                 console.log(error, "error");
             }
         }
-
-    }
-
+    };
 
     return (
         <>
@@ -118,15 +106,12 @@ const Forget = () => {
                             handleBlur,
                             handleChange,
                             handleSubmit,
-
                             isSubmitting
                         }) => (
-
-                            <form onSubmit={handleSubmit} >
+                            <form onSubmit={handleSubmit}>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12}></Grid>
                                     <TextField
-
                                         fullWidth
                                         name="emailId"
                                         label="emailId"
@@ -136,15 +121,12 @@ const Forget = () => {
                                         value={values.emailId}
                                         placeholder="Enter Your Email"
                                         sx={{ padding: '2px', marginTop: 4 }}
-
                                         error={touched.emailId && Boolean(errors.emailId)}
                                         helperText={touched.emailId && errors.emailId}
                                     />
                                     <ErrorMessage name="emailId" component={ValidationMessage} />
-
                                 </Grid>
-                                <Grid item xs={12}>
-                                </Grid>
+                                <Grid item xs={12}></Grid>
                                 <Grid item xs={12}>
                                     <Button variant="contained"
                                         type="submit"
@@ -152,10 +134,9 @@ const Forget = () => {
                                         sx={{ bgcolor: 'rgba(255, 153, 153, 0.4)', color: '#000', padding: '2px', marginTop: 4 }}
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            handleSendOTP(values, { isSubmitting });
+                                            handleSendOTP(values);
                                         }}>
-
-                                        {isSubmitting ? "Logging in..." : "otp send"}
+                                        {isSubmitting ? "Sending OTP..." : "Send OTP"}
                                     </Button>
                                 </Grid>
                                 <Grid container spacing={2}>
@@ -174,7 +155,6 @@ const Forget = () => {
                                             helperText={touched.otp && errors.otp}
                                         />
                                         <ErrorMessage name="otp" component={ValidationMessage} />
-
                                     </Grid>
                                     <Button fullWidth type="submit" variant="contained" sx={{ bgcolor: 'rgba(255, 153, 153, 0.4)', color: '#000', padding: '2px', marginTop: 4 }}>
                                         Verify OTP
@@ -184,13 +164,9 @@ const Forget = () => {
                         )}
                     </Formik>
                 </Box>
-
             </Container>
-
-
         </>
     );
 };
+
 export default Forget;
-
-

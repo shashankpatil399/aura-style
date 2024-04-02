@@ -41,7 +41,5 @@ const customer = async (req, res) => {
     res.send(user);
     console.log(user)
   }
-
-  
   module.exports= {customer,deleteItem,Update,getUserById}
   

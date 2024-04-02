@@ -10,6 +10,7 @@ app.use(cors())
 app.use(express.json())
 app.use(router)
 app.use(bodyParser.json());
+app.use(express.static('upload'))
 
 
 mongoose.connect('mongodb://localhost:27017/userdb').then(()=>{

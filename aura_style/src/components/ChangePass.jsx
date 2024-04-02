@@ -7,8 +7,6 @@ import { useNavigate } from "react-router-dom";
 import HeaderBar from './HeaderBar'
 import { toast } from 'react-toastify';
 
-
-
 const getToken = () => {
     return localStorage.getItem('token');
 };
@@ -53,8 +51,8 @@ function ChangePass() {
           
             if (response.status === 200) {
                
-                    localStorage.removeItem('token'); // Remove the token from localStorage
-                    navigate("/Login");// Navigate to the Login page
+                    localStorage.removeItem('token'); 
+                    navigate("/Login");
                   
                 console.log("password change successfully")
                 toast.success('password change successful!');

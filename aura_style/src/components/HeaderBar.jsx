@@ -17,16 +17,17 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-// import MailIcon from '@mui/icons-material/Mail';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Link, useNavigate } from 'react-router-dom';
-
+import  { useEffect, useState } from "react";
+import Axios from 'axios';
 
 
 const drawerWidth = 240;
+
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -50,7 +51,7 @@ const closedMixin = (theme) => ({
   [theme.breakpoints.up('sm')]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
-  backgroundColor: 'rgb(255, 153, 153, 1.5)', // Adjusted drawer color
+  backgroundColor: 'rgb(255, 153, 153, 1.5)', 
 });
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -58,12 +59,10 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'flex-end',
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
-const appBarColor = 'rgb(255, 153, 153, 0.9)'; // Define the header color here
-
+const appBarColor = 'rgb(255, 153, 153, 0.9)';
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -80,7 +79,7 @@ const AppBar = styled(MuiAppBar, {
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
-  backgroundColor: appBarColor, // Set the background color here
+  backgroundColor: appBarColor, 
 }));
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -110,6 +109,9 @@ export default function HeaderBar() {
   const handleDrawerOpen = () => {
     setOpen(true);
   };
+  const dash =()=>{
+    navigate("/dashboard");
+  }
 
   const handleDrawerClose = () => {
     setOpen(false);
@@ -126,10 +128,41 @@ export default function HeaderBar() {
     setAnchorElUser(null);
   };
   const LogoutApi = (token) => {
-    localStorage.removeItem('token'); // Remove the token from localStorage
-    navigate("/Login");// Navigate to the Login page
+    localStorage.removeItem('token'); 
+    navigate("/Login");
   };
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    Axios.get('http://localhost:8040/profile',{
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token
+      }
+    })
+    .then((res) => {
+      if (res.data) {
+        setProfile(res.data);
+        setLoading(false);
+      } else {
+        console.error("No profile data received from the server.");
+      }
+    })
+    .catch(error => {
+      console.error("Error fetching profile data:", error);
+     
+    });
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!profile) {
+    return <div>No profile data available.</div>;
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -149,13 +182,13 @@ export default function HeaderBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h4" style={{ fontFamily: "'Ojuju', sans-serif" }}>
-            Aura style
+         <div onClick={dash}>Aura style</div>
           </Typography>
           <Toolbar sx={{ marginLeft: 'auto' }}>
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ marginLeft: ' 0 auto' }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Avatar alt="Remy Sharp"  src={profile.image} />
                 </IconButton>
               </Tooltip>
               <Menu
