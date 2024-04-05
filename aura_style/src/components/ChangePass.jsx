@@ -13,7 +13,7 @@ const getToken = () => {
 
 const validationSchema = Yup.object().shape({
     oldPassword: Yup.string().required('oldPassword is required'),
-    newPassword: Yup.string().required('newPassword is required'),
+    newPassword:  Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
 });
 
 const ValidationMessage = ({ children }) => (

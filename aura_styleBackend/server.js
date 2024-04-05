@@ -6,23 +6,22 @@ const router = require("./routes/routess")
  require("dotenv").config();
  const port = process.env.PORT;
 const cors = require("cors")
-app.use(cors())
-app.use(express.json())
-app.use(router)
-app.use(bodyParser.json());
-app.use(express.static('upload'))
 
+app.use(express.json())
+app.use(cors())
+app.use(express.static('public'))
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(router)
 
 mongoose.connect('mongodb://localhost:27017/userdb').then(()=>{
 
-    
     console.log("mongodb connect")
-}).catch((error)=>{
+    }).catch((error)=>{
     console.log("mongodb connect",error);
-})
-
-app.listen(port,()=>{
+    })
+    app.listen(port,()=>{
     console.log(`server is run on ${port}`)
-}) 
-
-
+    })

@@ -6,8 +6,13 @@ import * as Yup from 'yup';
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from 'react-toastify';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
+
+
 const validationSchema = Yup.object().shape({
-    password: Yup.string().required('Password is required'),
+    password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
+    confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match').required('Password is required'),
 });
 const ValidationMessage = ({ children }) => (
     <span style={{ color: 'red' }}>{children}</span>
@@ -27,7 +32,7 @@ function Reset() {
     };
     const handleFormSubmit = async (values) => {
         try {
-            const url = "http://localhost:8040/resetpass";
+            const url = `${apiUrl}/resetpass`;
             const response = await axios.post(url, values, {
                 headers: {
                     "Content-Type": "application/json",

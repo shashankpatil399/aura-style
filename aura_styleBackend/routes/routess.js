@@ -13,17 +13,9 @@ const changepassController = require("../controllers/changepassController.js")
 const verifyTokenmiddle = require('../Mddleware/verifyToken.js');
 const profileController = require("../controllers/profileController.js")
 const upload = require("../Mddleware/ImageUpload.js")
+const updatecontroller = require("../controllers/updatecontroller.js")
 
-router.get("/verifyToken",verifyTokenmiddle)
-router.post("/Update/:id",customerController.Update)
-router.post("/Update/:id",customerController.Update)
-router.get("/getUserById/:id",customerController.getUserById)
-router.get("/customer",customerController.customer)
-router.delete("/deleteItem/:id",customerController.deleteItem)
-router.post("/verifyOtp",verifyController.verifyOtp)
-router.post("/resetpass",resetpassController.resetPass)
-router.post("/otpSend",forgetController.otpSend)
-router.post("/login",loginController.login)
+
 
 router.post('/Signup', 
 [
@@ -33,14 +25,28 @@ router.post('/Signup',
     body('mobileNo').notEmpty().withMessage('Mobile number is required'),
     body('password').notEmpty().withMessage('Password is required'),
     body('confirmPassword').notEmpty().withMessage('Confirm password is required')
-       
-    
 ],
 upload.single('image'),SignupController.Signup);
 
+router.post("/login",
+[
+    body('emailId').notEmpty().withMessage('Email is required').isEmail().withMessage('Invalid email format'),
+    body('password').notEmpty().withMessage('Password is required'),
+],
+loginController.login)
+
+router.get("/verifyToken",verifyTokenmiddle)
+router.get("/getUserById/:id",customerController.getUserById)
+router.get("/customer",customerController.customer)
+router.delete("/deleteItem/:id",customerController.deleteItem)
+router.post("/verifyOtp",
+
+verifyController.verifyOtp)
+router.post("/resetpass",resetpassController.resetPass)
+router.post("/otpSend",forgetController.otpSend)
+router.post("/test",profileController.testUpdate)
 router.post("/ChangePass",verifyTokenmiddle,changepassController.changePass)
 router.get("/profile",verifyTokenmiddle,profileController.profile)
 router.put("/updateProfile",verifyTokenmiddle,profileController.updateProfile)
-
-
+router.post("/updateone",verifyTokenmiddle,updatecontroller.update2)
 module.exports = router;

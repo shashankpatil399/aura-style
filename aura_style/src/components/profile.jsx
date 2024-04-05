@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import Axios from 'axios';
 import { Typography, Container, Grid, Box, Button, TextField, Avatar } from '@mui/material';
@@ -33,10 +32,10 @@ function Profile() {
       });
   }, []);
 
-  const handleSubmit = async (event) => {
-    console.log(event.target.value);
-    event.preventDefault();
-  };
+  // const handleSubmit = async (event) => {
+  //   console.log(event.target.value);
+  //   event.preventDefault();
+  // };
 
   const handleEdit = () => {
     setEditMode(true);
@@ -44,7 +43,7 @@ function Profile() {
 
   const handleUpdate = () => {
     const token = localStorage.getItem('token');
-    Axios.put('http://localhost:8040/updateProfile', updatedProfile, {
+    Axios.post('http://localhost:8040/updateone', updatedProfile, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": token
@@ -193,5 +192,4 @@ function Profile() {
     </>
   );
 }
-
 export default Profile;

@@ -5,19 +5,25 @@ import { TextField, Button,Typography,Container, Grid, Box} from '@mui/material'
 import * as Yup from 'yup';
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from 'react-toastify';
+import { useDispatch } from "react-redux";
+import { loginFailure,loginSuccess } from "../redux/authSlice";
+
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 
 
 const validationSchema = Yup.object().shape({
     emailId: Yup.string().email('Invalid email').required('Email is required'),
-    password: Yup.string().required('Password is required')
-});
+    password: Yup.string().required('Password is required')});
 
 const ValidationMessage = ({ children }) => (
     <span style={{ color: 'red' }}>{children}</span>
 );
 
 export default function Login() {
+
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,13 +40,15 @@ export default function Login() {
 
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
-            const response = await axios.post('http://localhost:8040/login', values, {
+            const response = await axios.post( `${apiUrl}/login`, values, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
     
             if (response.status === 200) {
+                dispatch(loginSuccess({token :response.data.token
+                }))
                 tokenSave(response.data.token);
                 console.log('Login successful');
                 toast.success('Login successful!');
@@ -51,6 +59,8 @@ export default function Login() {
             }
         } catch (error) {
             console.error('Error:', error);
+            dispatch(loginFailure({error : "login unsuccesfull"
+            }))
     
             if (error.response) {
                 const { status, data } = error.response;
@@ -131,8 +141,7 @@ export default function Login() {
                                         variant="contained"
                                         sx={{ bgcolor: 'rgba(255, 153, 153, 0.4)', color: '#000', padding: '2px', marginTop: 4 }}
                                         disabled={isSubmitting}
-                                        fullWidth
-                                    >
+                                        fullWidth >
                                         {isSubmitting ? "LOGIN..." : "LOGIN"}
                                     </Button>
                                 </Grid>
@@ -144,11 +153,11 @@ export default function Login() {
                 <Typography variant="body2">
                     <Link to="/Forget" style={{ textDecoration: 'none', color: 'blue' }}>Forget Password</Link> {}
                 </Typography>
-
+<span>
                 <Typography variant="body2">
-                    Already have an account?{' '}
                     <Link to="/Signup" style={{ textDecoration: 'none', color: 'blue' }}>Sign Up Here</Link> {}
                 </Typography>
+                </span>
             </Box>
         </Container>
     );

@@ -4,8 +4,12 @@ import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Typography, Container, Box, Grid } from '@mui/material';
 import axios from 'axios';
-import HeaderBar from './HeaderBar';
 import { toast } from 'react-toastify';
+
+
+const apiUrl = process.env.REACT_APP_API_URL;
+
+
 
 const Forget = () => {
     const [emailId, setEmailId] = useState(''); 
@@ -28,7 +32,7 @@ const Forget = () => {
     const handleSendOTP = async (values) => {
         console.log(values);
         try {
-            const url = "http://localhost:8040/otpSend";
+            const url = `${apiUrl}/otpSend`;
             const response = await axios.post(url, values, {
                 headers: {
                     "Content-Type": "application/json",
@@ -53,7 +57,7 @@ const Forget = () => {
     const handleFormSubmit = async (values) => {
         console.log(values);
         try {
-            const url = "http://localhost:8040/verifyOtp";
+            const url = `${apiUrl}/verifyOtp`;
             const response = await axios.post(url, values, {
                 headers: {
                     "Content-Type": "application/json",
@@ -79,7 +83,7 @@ const Forget = () => {
 
     return (
         <>
-            <HeaderBar />
+            
             <Container maxWidth="xs" style={{ backgroundColor: '#f0f0f0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                 <Box sx={{
                     boxShadow: '0px 5px 15px 0px rgba(0,0,0,0.9)',

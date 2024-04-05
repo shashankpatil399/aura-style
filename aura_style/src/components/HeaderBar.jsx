@@ -21,14 +21,18 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+
+import { Collapse } from '@mui/material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 import  { useEffect, useState } from "react";
 import Axios from 'axios';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
+
 
 const drawerWidth = 240;
-
-
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create('width', {
@@ -98,9 +102,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
   }),
 );
-
-
 export default function HeaderBar() {
+
+  const [openSublist, setOpenSublist] = useState(false);
+
+  const handleClick = () => {
+    setOpenSublist(!openSublist);
+  };
   const navigate = useNavigate();
 
   const theme = useTheme();
@@ -136,7 +144,7 @@ export default function HeaderBar() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    Axios.get('http://localhost:8040/profile',{
+    Axios.get(`${apiUrl}/profile`,{
       headers: {
         "Content-Type": "application/json",
         "Authorization": token
@@ -157,12 +165,12 @@ export default function HeaderBar() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loadin</div>;
   }
 
-  if (!profile) {
-    return <div>No profile data available.</div>;
-  }
+  // if (!profile) {
+  //   return <div>No profile data available.</div>;
+  // }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -188,7 +196,7 @@ export default function HeaderBar() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ marginLeft: ' 0 auto' }}>
-                  <Avatar alt="Remy Sharp"  src={profile.image} />
+                  <Avatar alt="Remy Sharp"  src={`${apiUrl}/upload/images/${profile.image}`} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -250,10 +258,28 @@ export default function HeaderBar() {
               >
                 <InboxIcon />
               </ListItemIcon>
-              <ListItemText primary="customer" sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary="Dashboard" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
-        
+          <ListItem disablePadding sx={{ display: 'block' }}>
+        <ListItemButton onClick={handleClick} sx={{ minHeight: 48 }}>
+          <ListItemIcon>
+            <InboxIcon />
+          </ListItemIcon>
+          <ListItemText primary="Manager" />
+          {openSublist ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={openSublist} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItemButton component={Link} to="/Employee">
+              <ListItemIcon>
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Submanager" />
+            </ListItemButton>
+          </List>
+        </Collapse>
+      </ListItem>
         </List>
         <Divider />
       </Drawer>

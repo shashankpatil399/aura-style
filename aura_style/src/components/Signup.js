@@ -8,24 +8,30 @@ import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
+
 const validationSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
     lastName: Yup.string().required('Last Name is required'),
-    emailId: Yup.string().email('Invalid email format').test(
+    emailId: Yup.string()
+    .email('Invalid email format')
+    .test(
         'isValidDomain',
         'Invalid domain extension',
         (value) => {
-            if (!value) return false; 
+            if (!value || !value.includes('@')) return false; // Check if email contains '@' character
             const domainParts = value.split('@')[1].split('.');
             const domainExtension = domainParts[domainParts.length - 1];
-            return ['com', 'org', 'net'].includes(domainExtension.toLowerCase()); 
+            return ['com', 'org', 'net'].includes(domainExtension.toLowerCase());
         }
-    ),
+    )
+        ,
     mobileNo: Yup.string()
         .matches(/^[0-9]+$/, 'Must be only digits')
         .required('Mobile No. is required'),
     password: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
-    confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+    confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match').required('Password is required'),
 
 });
 
@@ -38,12 +44,12 @@ export default function Signup() {
     const [selectedImage, setSelectedImage] = useState(null);
 
     const initialValues = {
-        firstName: "",
-        lastName: "",
-        emailId: "",
-        mobileNo: "",
-        image: null,
-        password: "",
+        firstName: "" ,
+        lastName: ""  ,
+        emailId:  ""  ,
+        mobileNo: ""  ,
+        image: null   ,
+        password: ""  ,
         confirmPassword: ""
     };
 
@@ -62,7 +68,7 @@ export default function Signup() {
             formData.append('confirmPassword', values.confirmPassword);
             formData.append('image', selectedImage);
 
-            const response = await axios.post('http://localhost:8040/Signup', formData, {
+            const response = await axios.post(`${apiUrl}/Signup`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

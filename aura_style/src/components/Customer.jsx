@@ -4,6 +4,9 @@ import Axios from 'axios';
 import HeaderBar from './HeaderBar';
 import { toast } from 'react-toastify';
 
+
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export default function Customer() {
   const [list, setList] = React.useState([]);
 
@@ -12,7 +15,7 @@ export default function Customer() {
     
     if (!isAuthenticated) {
     } else {
-      Axios.get('http://localhost:8040/customer')
+      Axios.get(`${apiUrl}/customer`)
         .then((res) => setList(res.data))
         .catch(error => console.error("Error fetching customer data:", error));
     }
@@ -20,7 +23,7 @@ export default function Customer() {
 
   const handleSubmit = async (id) => {
     try {
-      const url = `http://localhost:8040/deleteItem/${id}`;
+      const url = `${apiUrl}/deleteItem/${id}`;
       console.log("id", id);
       const response = await Axios.delete(url);
 
@@ -42,6 +45,7 @@ export default function Customer() {
         <table style={{ width: '60%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
+            <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}>Image</th>
               <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}> First Name</th>
               <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}> Last Name</th>
               <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}>Email</th>
@@ -54,6 +58,15 @@ export default function Customer() {
             {list.map((value, key) => (
               <tr key={key}>
 
+
+<td>{value.image && (
+                  <img
+                    src={`http://localhost:8040/upload/images/${value.image}`}
+                    alt={value.name}
+                    style={{ width: "50px", height: "50px" }}
+                  />
+                )}
+</td>
                 <td style={{ border: '1px solid #dddddd', padding: '8px' }}>{value.firstName}</td>
                 <td style={{ border: '1px solid #dddddd', padding: '8px' }}>{value.lastName}</td>
                 <td style={{ border: '1px solid #dddddd', padding: '8px' }}>{value.emailId}</td>

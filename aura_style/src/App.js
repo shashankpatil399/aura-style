@@ -52,6 +52,7 @@ import ChangePass from "./components/ChangePass"
 import Profile from "./components/profile"
 import Update from "./components/UpdateUser"
 
+
 const routes = [
   {
     path: '/',
@@ -61,6 +62,7 @@ const routes = [
    
     ]
   },
+  
   { path: 'Customer', element: <Customer /> },
   { path: 'Update/:id', element: <Update /> },
   { path: 'ChangePass', element: <ChangePass /> },

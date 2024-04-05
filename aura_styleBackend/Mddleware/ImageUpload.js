@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'upload/images');
+      cb(null, './public/upload/images');
     },
     filename: function (req, file, cb) {
       let ext = path.extname(file.originalname);
