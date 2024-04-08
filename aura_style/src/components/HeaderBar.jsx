@@ -21,16 +21,14 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-
 import { Collapse } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Axios from 'axios';
 
+
 const apiUrl = process.env.REACT_APP_API_URL;
-
-
 
 const drawerWidth = 240;
 const openedMixin = (theme) => ({
@@ -55,7 +53,7 @@ const closedMixin = (theme) => ({
   [theme.breakpoints.up('sm')]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
-  backgroundColor: 'rgb(255, 153, 153, 1.5)', 
+  backgroundColor: 'rgb(255, 153, 153, 1.5)',
 });
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -83,7 +81,7 @@ const AppBar = styled(MuiAppBar, {
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
-  backgroundColor: appBarColor, 
+  backgroundColor: appBarColor,
 }));
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -117,7 +115,7 @@ export default function HeaderBar() {
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-  const dash =()=>{
+  const dash = () => {
     navigate("/dashboard");
   }
 
@@ -136,7 +134,7 @@ export default function HeaderBar() {
     setAnchorElUser(null);
   };
   const LogoutApi = (token) => {
-    localStorage.removeItem('token'); 
+    localStorage.removeItem('token');
     navigate("/Login");
   };
   const [profile, setProfile] = useState(null);
@@ -144,24 +142,24 @@ export default function HeaderBar() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    Axios.get(`${apiUrl}/profile`,{
+    Axios.get(`${apiUrl}/profile`, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": token
       }
     })
-    .then((res) => {
-      if (res.data) {
-        setProfile(res.data);
-        setLoading(false);
-      } else {
-        console.error("No profile data received from the server.");
-      }
-    })
-    .catch(error => {
-      console.error("Error fetching profile data:", error);
-     
-    });
+      .then((res) => {
+        if (res.data) {
+          setProfile(res.data);
+          setLoading(false);
+        } else {
+          console.error("No profile data received from the server.");
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching profile data:", error);
+
+      });
   }, []);
 
   if (loading) {
@@ -190,13 +188,13 @@ export default function HeaderBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h4" style={{ fontFamily: "'Ojuju', sans-serif" }}>
-         <div onClick={dash}>Aura style</div>
+            <div onClick={dash}>Aura style</div>
           </Typography>
           <Toolbar sx={{ marginLeft: 'auto' }}>
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ marginLeft: ' 0 auto' }}>
-                  <Avatar alt="Remy Sharp"  src={`${apiUrl}/upload/images/${profile.image}`} />
+                  <Avatar alt="Remy Sharp" src={`${apiUrl}/upload/images/${profile.image}`} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -221,7 +219,7 @@ export default function HeaderBar() {
                 <MenuItem component={Link} to="/ChangePass" onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">Change Password</Typography>
                 </MenuItem>
-                <MenuItem  onClick={LogoutApi}>
+                <MenuItem onClick={LogoutApi}>
                   <Typography textAlign="center">Logout</Typography>
                 </MenuItem>
               </Menu>
@@ -262,24 +260,107 @@ export default function HeaderBar() {
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding sx={{ display: 'block' }}>
-        <ListItemButton onClick={handleClick} sx={{ minHeight: 48 }}>
-          <ListItemIcon>
-            <InboxIcon />
-          </ListItemIcon>
-          <ListItemText primary="Manager" />
-          {openSublist ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openSublist} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItemButton component={Link} to="/Employee">
-              <ListItemIcon>
+            <ListItemButton
+              component={Link}
+              to="/customer"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
                 <InboxIcon />
               </ListItemIcon>
-              <ListItemText primary="Submanager" />
+              <ListItemText primary="customers" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </List>
-        </Collapse>
-      </ListItem>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/category"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Category" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+         
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/productsizes"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Products" sx={{ opacity: open ? 1 : 0 }} />
+            
+            
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/Orders"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Orders" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+
+
         </List>
         <Divider />
       </Drawer>

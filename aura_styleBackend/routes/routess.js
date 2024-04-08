@@ -14,6 +14,8 @@ const verifyTokenmiddle = require('../Mddleware/verifyToken.js');
 const profileController = require("../controllers/profileController.js")
 const upload = require("../Mddleware/ImageUpload.js")
 const updatecontroller = require("../controllers/updatecontroller.js")
+const addcategoriesController = require("../controllers/addcategoriesController.js")
+const productController = require("../controllers/productController.js")
 
 
 
@@ -49,4 +51,10 @@ router.post("/ChangePass",verifyTokenmiddle,changepassController.changePass)
 router.get("/profile",verifyTokenmiddle,profileController.profile)
 router.put("/updateProfile",verifyTokenmiddle,profileController.updateProfile)
 router.post("/updateone",verifyTokenmiddle,updatecontroller.update2)
+router.post("/addCategory",addcategoriesController.addcategory)
+router.get("/getCategory",addcategoriesController.getCategory)
+router.delete("/deleteItemcat/:id",addcategoriesController.deleteItemcat)
+router.post("/product",productController.product)
+
+
 module.exports = router;

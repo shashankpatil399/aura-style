@@ -2,13 +2,12 @@ const mongoose = require("mongoose")
 const AuraUser = require("../models/signupmodels")
 
 const customer = async (req, res) => {
-
   const getAllUser = await AuraUser.find({})
-    console.log("getAllUser", getAllUser);
-    res.send(getAllUser)
+  console.log("getAllUser", getAllUser);
+  res.send(getAllUser)
   }
   const deleteItem = async (req, res) => {
-    try {
+  try {
       const delid = req.params.id;
       const resdel = await AuraUser.findByIdAndDelete(delid);
       console.log(delid);

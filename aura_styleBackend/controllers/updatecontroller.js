@@ -10,7 +10,7 @@ const update2 = async (req, res) => {
       }
       // let updateId = req.userId;
       console.log("req----", req?.body)
-      const userId = req.userId;
+      const userId =         req.userId;
       let ufirstName = req.body.firstName;
       let ulastName = req.body.lastName;
       let uemailId = req.body.emailId;

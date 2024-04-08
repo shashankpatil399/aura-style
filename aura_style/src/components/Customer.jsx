@@ -45,9 +45,9 @@ export default function Customer() {
         <table style={{ width: '60%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-            <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}>Image</th>
-              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}> First Name</th>
-              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}> Last Name</th>
+              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}>Image</th>
+              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}>First Name</th>
+              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}>Last Name</th>
               <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}>Email</th>
               <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}>Mobile</th>
               <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' }}>Update</th>
@@ -57,8 +57,7 @@ export default function Customer() {
           <tbody>
             {list.map((value, key) => (
               <tr key={key}>
-
-
+                
 <td>{value.image && (
                   <img
                     src={`http://localhost:8040/upload/images/${value.image}`}

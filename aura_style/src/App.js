@@ -51,6 +51,7 @@ import Customer from './components/Customer';
 import ChangePass from "./components/ChangePass"
 import Profile from "./components/profile"
 import Update from "./components/UpdateUser"
+import Category from './components/category';
 
 
 const routes = [
@@ -62,7 +63,7 @@ const routes = [
    
     ]
   },
-  
+  { path: 'category', element: <Category /> },
   { path: 'Customer', element: <Customer /> },
   { path: 'Update/:id', element: <Update /> },
   { path: 'ChangePass', element: <ChangePass /> },

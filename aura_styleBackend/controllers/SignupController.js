@@ -17,10 +17,10 @@ const confirmHashedPassword = await bcrypt.hash(confirmPassword, saltRounds);
    console.log("image",image);
   const data = new AuraUser({
     firstName:       req.body?.firstName,
-    lastName:        req.body?.lastName,
-    emailId:         req.body?.emailId,
-    mobileNo:        req.body?.mobileNo,
-    image: image,
+    lastName:         req.body?.lastName,
+    emailId:           req.body?.emailId,
+    mobileNo:         req.body?.mobileNo,
+    image:                         image,
 
     password:        hashedPassword,
     confirmPassword: confirmHashedPassword,

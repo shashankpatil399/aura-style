@@ -2,10 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const AuraUser = require("../models/signupmodels");
 
-
 const changePass = async (req, res) => {
-
-  
   try {
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;
@@ -25,7 +22,6 @@ const changePass = async (req, res) => {
         message: "Old password is incorrect",
       });
     }
-
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
@@ -42,7 +38,4 @@ const changePass = async (req, res) => {
     });
   }
 };
-module.exports = { changePass };
-
-
-
+module.exports = {changePass};
