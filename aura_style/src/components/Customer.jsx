@@ -4,7 +4,6 @@ import Axios from 'axios';
 import HeaderBar from './HeaderBar';
 import { toast } from 'react-toastify';
 
-
 const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function Customer() {
@@ -20,7 +19,7 @@ export default function Customer() {
         .catch(error => console.error("Error fetching customer data:", error));
     }
   }, [ ]);
-
+  
   const handleSubmit = async (id) => {
     try {
       const url = `${apiUrl}/deleteItem/${id}`;
@@ -30,7 +29,7 @@ export default function Customer() {
       if (response.data.status === 200) {
         window.location.reload();
         toast.success('Delete successful!');
-        
+
       }
     } catch (error) {
       console.log('Error:', error);

@@ -27,12 +27,12 @@ const updateProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    firstName = updatedProfileData.firstName;
-    lastName = updatedProfileData.lastName;
-    emailId = updatedProfileData.emailId;
-    mobileNo = updatedProfileData.mobileNo;
-    image = updatedProfileData.image;
-    password = updatedProfileData.password;
+    firstName =  updatedProfileData.firstName;
+    lastName  =  updatedProfileData.lastName;
+    emailId   =  updatedProfileData.emailId;
+    mobileNo  =  updatedProfileData.mobileNo;
+    image     =  updatedProfileData.image;
+    password  =  updatedProfileData.password;
 
     
  console.log(user);

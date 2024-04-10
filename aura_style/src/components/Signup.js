@@ -56,7 +56,7 @@ export default function Signup() {
     const handleImageChange = (event) => {
         setSelectedImage(event.target.files[0]);
     }
-
+    
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
             const formData = new FormData();

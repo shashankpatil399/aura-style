@@ -52,6 +52,7 @@ import ChangePass from "./components/ChangePass"
 import Profile from "./components/profile"
 import Update from "./components/UpdateUser"
 import Category from './components/category';
+import Product from './components/Product';
 
 
 const routes = [
@@ -60,9 +61,11 @@ const routes = [
     element: <ProtectedRoute element={<Dashboard />} />,
     children: [
       { path: 'Dashboard', element: <Dashboard /> },
-   
+
     ]
   },
+  
+  { path: 'product', element: <Product /> },
   { path: 'category', element: <Category /> },
   { path: 'Customer', element: <Customer /> },
   { path: 'Update/:id', element: <Update /> },
@@ -79,8 +82,8 @@ const App = () => {
   const routing = useRoutes(routes);
 
   return routing;
-  
-  
+
+
 };
 
 export default App;

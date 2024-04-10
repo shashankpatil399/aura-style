@@ -33,7 +33,7 @@ const getCategory = async(req,res) =>{
 try{
 
     const getAllCategories = await AuraCategory.find({})
-    console.log(getAllCategories);
+    // console.log(getAllCategories);
 
     res.send(getAllCategories)
 

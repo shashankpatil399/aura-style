@@ -39,11 +39,11 @@ loginController.login)
 
 router.get("/verifyToken",verifyTokenmiddle)
 router.get("/getUserById/:id",customerController.getUserById)
+router.get("/getProduct",productController.getProduct)
 router.get("/customer",customerController.customer)
+router.delete("/deleteProduct/:id",productController.deleteProduct)
 router.delete("/deleteItem/:id",customerController.deleteItem)
-router.post("/verifyOtp",
-
-verifyController.verifyOtp)
+router.post("/verifyOtp",verifyController.verifyOtp)
 router.post("/resetpass",resetpassController.resetPass)
 router.post("/otpSend",forgetController.otpSend)
 router.post("/test",profileController.testUpdate)
@@ -54,7 +54,9 @@ router.post("/updateone",verifyTokenmiddle,updatecontroller.update2)
 router.post("/addCategory",addcategoriesController.addcategory)
 router.get("/getCategory",addcategoriesController.getCategory)
 router.delete("/deleteItemcat/:id",addcategoriesController.deleteItemcat)
-router.post("/product",productController.product)
+router.post("/product",upload.single('image'),productController.product)
+router.post("/UpdateProduct/:id",upload.single('image'),productController.UpdateProduct)
+
 
 
 module.exports = router;
