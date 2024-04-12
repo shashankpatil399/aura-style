@@ -34,8 +34,10 @@
 //     </Router>
 //   );
 // };
-
 // export default App;
+
+
+
 
 
 import React from 'react';
@@ -53,6 +55,7 @@ import Profile from "./components/profile"
 import Update from "./components/UpdateUser"
 import Category from './components/category';
 import Product from './components/Product';
+import Size from './components/size';
 
 
 const routes = [
@@ -64,7 +67,8 @@ const routes = [
 
     ]
   },
-  
+
+  { path: 'Size', element: <Size /> },
   { path: 'product', element: <Product /> },
   { path: 'category', element: <Category /> },
   { path: 'Customer', element: <Customer /> },

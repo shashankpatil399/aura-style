@@ -162,3 +162,156 @@ export default function Login() {
         </Container>
     );
 }
+
+
+
+
+
+
+// <Dialog open={open} onClose={handleClose}>
+// <DialogTitle>Add Product</DialogTitle>
+
+// <Avatar
+//           sx={{ width: 100, height: 100, mx: "auto", mb: 2 }}
+//           src={selectedImage ? URL.createObjectURL(selectedImage) : ""}
+//           alt="Profile"
+//       />      
+
+
+// <input
+//     accept="image/*"
+//     id="image-upload"
+//     type="file"
+//     style={{ display: "none" }}
+//     onChange={handleImageChange}
+//   />
+//   <label htmlFor="image-upload">
+//   <Button
+// sx={{
+// marginLeft: 24,
+// backgroundColor: 'rgba(255, 153, 153)', // Adjust the color as needed
+// color: '#fff', // Text color
+// '&:hover': {
+// backgroundColor: 'rgba(255, 153, 153)', // Hover color
+// },
+// }}
+// component="span"
+// >
+// Upload Image
+// </Button>
+//   </label>
+//         <DialogContent>
+//   <TextField
+//     autoFocus
+//     margin="dense"
+//     id="productName"
+//     label="Product Name"
+//     fullWidth
+//     variant="standard"
+//   />
+//   <TextField
+//     margin="dense"
+//     id="description"
+//     label="Description"
+//     fullWidth
+//     variant="standard"
+//   />
+
+
+// <InputLabel id="category">Category</InputLabel>
+// <Select
+// autoFocus
+// margin="dense"
+// id="category"
+// label="categorylabel"
+// fullWidth
+// labelId="category"
+// variant="standard"
+// defaultValue=""
+// multiple
+// value={selectedCategory}
+// onChange={(event) => setSelectedCategory(event.target.value)}>
+
+// {categories.map((item,index) => (
+// <MenuItem key={index} value={item.category}>
+// {item.category}
+// </MenuItem>
+
+// ))}
+// </Select>
+
+//   <TextField
+//     margin="dense"
+//     id="price"
+//     label="Price"
+//     fullWidth
+//     variant="standard"
+//   />
+//   {/* <TextField
+//     margin="dense"
+//     id="availableSizes"
+//     label="Available Sizes"
+//     fullWidth
+//     variant="standard"
+//   /> */}
+
+
+
+// <InputLabel id="availableaSizes">Size</InputLabel>
+// <Select
+// autoFocus
+// margin="dense"
+// id="availableSizes"
+// label="Size"
+// fullWidth
+// labelId="availableSizes"
+// variant="standard"
+// value={selectedSize}
+// multiple
+// onChange={(event) => setSelectedSize(event.target.value)}>
+// {size.map((item,index) => (
+// <MenuItem key={index} value={item.size}>
+// {item.size}
+// </MenuItem>
+// ))}
+// </Select>
+
+//   <TextField
+//     margin="dense"
+//     id="availableColors"
+//     label="Available Colors"
+//     fullWidth
+//     variant="standard"
+//   />
+//   <TextField
+//     margin="dense"
+//     id="materialType"
+//     label="Material Type"
+//     fullWidth
+//     variant="standard"
+//   />
+ 
+// </DialogContent>
+// <DialogActions>
+//   <Button onClick={handleClose}>Cancel</Button>
+//   <Button
+//     onClick={() => {
+      
+//       const formData = new FormData();
+//       formData.append("productName",      document.getElementById("productName").value);
+//       formData.append("description",      document.getElementById("description").value);
+//       formData.append("price",            document.getElementById("price").value);
+//       formData.append("availableColors",  document.getElementById("availableColors").value);
+//       formData.append("materialType",     document.getElementById("materialType").value);
+//       formData.append('image',            selectedImage);
+//       formData.append("availableSizes",   selectedSize);
+//       formData.append("category",         selectedCategory);
+
+     
+//       handleAddProduct(formData);
+//     }}
+//   >
+//   Add
+//   </Button>
+// </DialogActions>
+// </Dialog>

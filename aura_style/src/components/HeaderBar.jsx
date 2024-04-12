@@ -307,11 +307,35 @@ export default function HeaderBar() {
               <ListItemText primary="Category" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/Size"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Sizes" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
          
           <ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton
               component={Link}
-              to="/productsizes"
+              to="/product"
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',
@@ -359,8 +383,6 @@ export default function HeaderBar() {
               <ListItemText primary="Orders" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
-
-
         </List>
         <Divider />
       </Drawer>
