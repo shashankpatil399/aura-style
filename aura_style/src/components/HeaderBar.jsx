@@ -238,7 +238,7 @@ export default function HeaderBar() {
           <ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton
               component={Link}
-              to="/customer"
+              to="/dashboard"
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',
@@ -262,7 +262,7 @@ export default function HeaderBar() {
           <ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton
               component={Link}
-              to="/customer"
+              to="/admin"
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',
@@ -280,9 +280,34 @@ export default function HeaderBar() {
               >
                 <InboxIcon />
               </ListItemIcon>
-              <ListItemText primary="customers" sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary="Admin" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/subAdmin"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="SubAdmin" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+          
           <ListItem disablePadding sx={{ display: 'block' }}>
             <ListItemButton
               component={Link}

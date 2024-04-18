@@ -1,4 +1,3 @@
-
 // import React from 'react';
 // import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // import 'react-toastify/dist/ReactToastify.css';
@@ -19,7 +18,7 @@
 //     <Router>
 //       <Routes>
 //         <Route path="/" element={<ProtectedRoute element={<Dashboard />} />}>
-//           <Route path="Dashboard" element={<Dashboard />} />
+//         <Route path="Dashboard" element={<Dashboard />} />
 //         </Route>
 //         <Route path="Customer" element={<Customer />} />
 //         <Route path='Update/:id' element={<Update />} />
@@ -36,10 +35,6 @@
 // };
 // export default App;
 
-
-
-
-
 import React from 'react';
 import { useRoutes } from 'react-router-dom';
 import Signup from './components/Signup';
@@ -49,33 +44,38 @@ import Reset from "./components/reset"
 import Dashboard from './components/Dashboard';
 import HeaderBar from './components/HeaderBar';
 import ProtectedRoute from './components/protectedRoute';
-import Customer from './components/Customer';
+import Admin from './components/admin';
 import ChangePass from "./components/ChangePass"
 import Profile from "./components/profile"
 import Update from "./components/UpdateUser"
 import Category from './components/category';
 import Product from './components/Product';
 import Size from './components/size';
+import GetProductName from './components/getProductName';
 
 
 const routes = [
   {
     path: '/',
-    element: <ProtectedRoute element={<Dashboard />} />,
+    // element: <ProtectedRoute element={<Dashboard />} />,
     children: [
       { path: 'Dashboard', element: <Dashboard /> },
 
+      { path: 'Size', element: <Size /> },
+      { path: 'product', element: <Product /> },
+      { path: 'category', element: <Category /> },
+      { path: 'admin', element: <Admin /> },
+      { path: 'Update/:id', element: <Update /> },
+      { path: 'profile', element: <Profile /> },
+      { path: 'HeaderBar', element: <HeaderBar /> },
+      { path: 'ChangePass', element: <ChangePass /> },
+      { path: '/product/:productName', element: <GetProductName /> },
+
+
+
     ]
   },
-
-  { path: 'Size', element: <Size /> },
-  { path: 'product', element: <Product /> },
-  { path: 'category', element: <Category /> },
-  { path: 'Customer', element: <Customer /> },
-  { path: 'Update/:id', element: <Update /> },
-  { path: 'ChangePass', element: <ChangePass /> },
-  { path: 'HeaderBar', element: <HeaderBar /> },
-  { path: 'profile', element: <Profile /> },
+ 
   { path: 'Signup', element: <Signup /> },
   { path: 'Login', element: <Login /> },
   { path: 'Forget', element: <Forget /> },

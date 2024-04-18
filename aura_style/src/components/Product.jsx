@@ -7,72 +7,125 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Link } from "react-router-dom";
-import { Avatar,TextField} from '@mui/material';
+import { Avatar, TextField } from '@mui/material';
 import { Select, MenuItem } from '@mui/material';
-import {InputLabel} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import { InputLabel } from "@mui/material";
+import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function Product() {
   const [list, setList] = useState([]);
   const [open, setOpen] = useState(false);
-  const [editOpen, setEditOpen]= useState(null);
+  const [editOpen, setEditOpen] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [categories, setCategories] = useState([]);
   const [size, setSize] = useState([]);
-  const [selectedSize, setSelectedSize] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState([]);
+  // const [selectedSize, setSelectedSize] = useState([]);
+  // const [selectedCategory, setSelectedCategory] = useState([]);
+  const [currentProduct, setCurrentProduct] = useState(null);
 
-
-  console.log("gdfgdg--------",selectedCategory);
-
-    const [formData, setFormData] = useState({
-    productName: "",
-    description: "",
-    price: "",
-    availableColors: "",
-    materialType: "",
-    category: "",
-    availableSizes: [],
+  const validationSchema = Yup.object({
+    productName: Yup.string().required('Product Name is required'),
+    description: Yup.string().required('Description is required'),
+    price: Yup.number().required('Price is required').positive('Price must be positive'),
+    availableColors: Yup.string().required('Available Colors is required'),
+    materialType: Yup.string().required('Material Type is required'),
+    category: Yup.array().min(1, 'Category is required'),
+    availableSizes: Yup.array().min(1, 'Available Sizes is required'),
   });
 
-  console.log("list",list);
-console.log("categories",categories);
+  const formik = useFormik({
 
-const handleClickOpen = () => {
-  setOpen(true);
-};
+    initialValues: {
+      productName: currentProduct ? currentProduct.productName : '',
+      description: currentProduct ? currentProduct.description : '',
+      price: currentProduct ? currentProduct.price : '',
+      availableColors: currentProduct ? currentProduct.availableColors : '',
+      materialType: currentProduct ? currentProduct.materialType : '',
+      category: currentProduct ? currentProduct.category : [],
+      availableSizes: currentProduct ? currentProduct.availableSizes : [],
+      image: null,
+      
+    },
 
-const handleClose = () => {
-  setOpen(false);
-};
+    validationSchema: validationSchema,
 
-
-const handleEditOpen = (product) => {
-  setEditOpen(true);
-  setFormData({
-    productName: product.productName,
-    description: product.description,
-    price: product.price,
-    availableColors: product.availableColors,
-    materialType: product.materialType,
-    category: product.category,
-    availableSizes: product.availableSizes,
+    onSubmit: (values) => {
+      const formData = new FormData();
+      formData.append('productName', values.productName);
+      formData.append('description', values.description);
+      formData.append('price', values.price);
+      formData.append('availableColors', values.availableColors);
+      formData.append('materialType', values.materialType);
+      formData.append('availableSizes', values.availableSizes.join(','));
+      formData.append('category', values.category.join(','));
+      formData.append('image', values.image); // Include the image here
+      if (selectedImage && selectedImage.type.startsWith('image/')) {
+        // Use createObjectURL here
+      } else {
+        console.error('Selected file is not an image');
+      }
+ 
+      if(currentProduct){
+      handleUpdateProduct(formData, currentProduct._id);
+      }
+      else{
+      handleAddProduct(formData)
+    }},
   });
-};
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+    setCurrentProduct(null); // Reset the current product
+    formik.resetForm(); // Reset Formik form values
+  };
+  const handleEditOpen = (product) => {
+    console.log("Selected Product:", product); // Log the selected product
+    setCurrentProduct(product);
+    setSelectedImage(product.image);
+    console.log("Current Product State:", currentProduct); // Log the current product state
+    setEditOpen(true);
+  };
+
+
+  useEffect(() => {
+    if (currentProduct) {
+      formik.setValues({
+        productName: currentProduct.productName,
+        description: currentProduct.description,
+        price: currentProduct.price,
+        availableColors: currentProduct.availableColors,
+        materialType: currentProduct.materialType,
+         category: currentProduct.category.split(','), // Split the string into an array
+      availableSizes: currentProduct.availableSizes.split(','), // S
+      });
+    }
+  }, [currentProduct]);
+
+
 
   const handleEditClose = () => {
     setEditOpen(false);
-    
-  }
-
+    formik.setFieldValue('image', null); // Reset the image field
+  };
 const handleImageChange = (event) => {
-setSelectedImage(event.target.files[0]);
-}
-
+  const file = event.target.files[0];
+  if (file) {
+    setSelectedImage(file); // Set the selected image
+    formik.setFieldValue('image', file); // Update the formik values
+  } else {
+    setSelectedImage(null); // Clear the selected image
+  }
+};
   const fetchData = async () => {
     try {
       const res = await axios.get(`${apiUrl}/getProduct`);
@@ -80,152 +133,159 @@ setSelectedImage(event.target.files[0]);
     } catch (error) {
       console.error("Data not found", error);
     }
-    };
-
+  };
   useEffect(() => {
     fetchData();
   }, []);
-
   const fetchCategories = async () => {
-
     try {
       const res = await axios.get(`${apiUrl}/getCategory`);
       console.log("Categories:", res.data);
       setCategories(res.data);
-      return res.data; 
+      return res.data;
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
   };
-
   useEffect(() => {
-  fetchCategories(); 
-},[apiUrl])
-
-
-const fetchSize = async () => {
-
-  try {
-    const res = await axios.get(`${apiUrl}/getSize`);
-    console.log("size:", res.data);
-    setSize(res.data);
-    return res.data; 
-  } catch (error) {
-    console.error("Error fetching size:", error);
-  }
-};
-
-useEffect(() => {
-fetchSize(); 
-},[apiUrl])
-
-
-const handleDeleteProduct = async (productId) => {
-  console.log("product",productId);
-  try {
-    const url = `${apiUrl}/deleteProduct/${productId}`;
-    const response = await axios.delete(url);
-
-    if (response.data.status === 200) {
-      fetchData();
-      toast.success("Delete successful!");
-    }
-  } catch (error) {
-    console.log("Error:", error);
-    toast.error("Error deleting product");
-  }
-};
-
-  console.log(categories)
-  console.log(size)
-
-    const handleAddProduct = async (formData) => {
+    fetchCategories();
+  }, [apiUrl])
+  const fetchSize = async () => {
     try {
-    const response = await axios.post(`${apiUrl}/product`, formData);
+      const res = await axios.get(`${apiUrl}/getSize`);
+      console.log("size:", res.data);
+      setSize(res.data);
+      return res.data;
+    } catch (error) {
+      console.error("Error fetching size:", error);
+    }
+  };
+  useEffect(() => {
+    fetchSize();
+  }, [apiUrl])
+  const handleDeleteProduct = async (productId) => {
+    try {
+      const url = `${apiUrl}/deleteProduct/${productId}`;
+      const response = await axios.delete(url);
 
-    if (response.status === 200) {
+      if (response.data.status === 200) {
+        fetchData();
+        toast.success("Delete successful!");
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      toast.error("Error deleting product");
+    }
+  };
+
+  const handleAddProduct = async (formData) => {
+    try {
+      const response = await axios.post(`${apiUrl}/product`, formData);
+      if (response.status === 200) {
         fetchData();
         toast.success("Product added successfully!");
         handleClose();
-    }
+        setCurrentProduct(null);
+      }
     } catch (error) {
       toast.error("Error adding product");
       console.error("Error:", error);
-    }    
-  };
-const handleUpdateProduct = async (productId) => {
-  try {
-    const updatedFormData = {
-      productName: formData.productName,
-      description: formData.description,
-      price: formData.price,
-      availableColors: formData.availableColors,
-      materialType: formData.materialType,
-      category: formData.category,
-      availableSizes: formData.availableSizes,
-    };
-
-    const response = await axios.put(`${apiUrl}/UpdateProduct/${productId}`, updatedFormData);
-
-    if (response.status === 200) {
-      toast.success("Product Update Successful.");
-      fetchData();
-      setEditOpen(false); // Close the dialog after successful update
     }
-  } catch (error) {
-    console.error("Error updating product:", error);
-    toast.error("Error updating product.");
-  }
-};
+  };
+  const handleUpdateProduct = async (formData, productId) => {
+    try {
+      const response = await axios.put(`${apiUrl}/updateProduct/${productId}`, formData);
 
-
+      if (response.status === 200) {
+        fetchData();
+        toast.success("Product updated successfully!");
+        handleEditClose();
+      }
+    } catch (error) {
+      toast.error("Error updating product");
+      console.error("Error:", error);
+    }
+  };
+  
+  const fetchAscData = async () => {
+    try {
+      const res = await axios.get(`${apiUrl}/sortProduct?sort=asc`);
+      setList(res.data);
+    } catch (error) {
+      console.error("Data not found", error);
+    }
+  };
+  
+  const fetchDescData = async () => {
+    try {
+      const res = await axios.get(`${apiUrl}/sortProduct?sort=desc`);
+      setList(res.data);
+    } catch (error) {
+      console.error("Data not found", error);
+    }
+  };
+  
+  
   return (
     <>
       <HeaderBar />
-      <div style={{ marginLeft: "270px", marginRight: "100px", marginTop : "30px" }}>
-                <table style={{ width: '60%', borderCollapse: 'collapse',border: '5px solid rgba(255, 153, 153)' }}>
-        
+      <div style={{ marginLeft: "270px", marginRight: "100px", marginTop: "30px" }}>
+        <table style={{ width: '60%', borderCollapse: 'collapse', border: '5px solid rgba(255, 153, 153)' }}>
           <thead>
-             <tr>
-              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' , borderBottom: '5px solid rgba(255, 153, 153)'}}>Serial No.      </th>
-              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)'}} >Image           </th>
+            <tr>
+              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)' }}>Serial No.      </th>
+              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)' }} >Image          </th>
               <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)' }}>Product Name    </th>
-              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)'}}>Description      </th>
+              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)' }}>Description     </th>
               <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)' }}>Category        </th>
-              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' , borderBottom: '5px solid rgba(255, 153, 153)'}}>Price           </th>
+              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)' }}>
+  Price 
+  <button onClick={fetchAscData} style={{ padding: '0', border: 'none', backgroundColor: 'transparent' }}>
+    <ArrowUpwardIcon style={{ fontSize: '16px' }} />
+  </button>
+  <button onClick={fetchDescData} style={{ padding: '0', border: 'none', backgroundColor: 'transparent' }}>
+    <ArrowDownwardIcon style={{ fontSize: '16px' }} />
+  </button>
+</th>
               <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)' }}>Available Sizes </th>
               <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)' }}>Available Colors</th>
-              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)'}}>Material Type    </th>
-              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left' , borderBottom: '5px solid rgba(255, 153, 153)'}}>Action          </th>
+              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)' }}>Material Type   </th>
+              <th style={{ backgroundColor: '#f2f2f2', padding: '12px 8px', textAlign: 'left', borderBottom: '5px solid rgba(255, 153, 153)' }}>Action          </th>
             </tr>
           </thead>
           <tbody>
-           
-            {list.map((product,index) => (
+
+            {list.map((product, index) => (
               <tr key={index}>
-                <td style={{  padding: '8px', borderColor: 'rgba(255, 153, 153)' , borderBottom: '5px solid rgba(255, 153, 153)' }}>{index + 1}</td>
-                <td style={{  padding: '8px', borderColor: 'rgba(255, 153, 153)' , borderBottom: '5px solid rgba(255, 153, 153)' }}>
-                  {product.image && (
-                    <img
-                      src={`${apiUrl}/upload/images/${product.image}`}
-                      alt={product.productName}
-                      style={{ width: "80px", height: "80px" }}
-                    />
-                  )}
+                <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>{index + 1}</td>
+                <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>
+                {product.image && (
+  <img
+    src={`${apiUrl}/upload/images/${product.image}`}
+    alt={product.productName}
+    style={{ width: "80px", height: "80px" }}
+  />
+)}
                 </td>
-                <td style={{  padding: '8px', borderColor: 'rgba(255, 153, 153)'  , borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.productName}    </td>
-                <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)'  , borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.description}    </td>
-                <td style={{  padding: '8px', borderColor: 'rgba(255, 153, 153)'  , borderBottom: '5px solid rgba(255, 153, 153)'}}>{product.category}        </td>
-                <td style={{  padding: '8px', borderColor: 'rgba(255, 153, 153)'  , borderBottom: '5px solid rgba(255, 153, 153)'}}>{product.price}           </td>
-                <td style={{  padding: '8px', borderColor: 'rgba(255, 153, 153)'  , borderBottom: '5px solid rgba(255, 153, 153)'}}>{product.availableSizes}  </td>
-                <td style={{  padding: '8px', borderColor: 'rgba(255, 153, 153)'  , borderBottom: '5px solid rgba(255, 153, 153)'}}>{product.availableColors} </td>
-                <td style={{  padding: '8px', borderColor: 'rgba(255, 153, 153)'  , borderBottom: '5px solid rgba(255, 153, 153)'}}>{product.materialType}    </td>
-                <td style={{  padding: '8px', borderColor: 'rgba(255, 153, 153)'  , borderBottom: '5px solid rgba(255, 153, 153)'}}>
-  
-                  <button onClick={() => handleDeleteProduct(product._id)}><DeleteIcon /></button>
-                  <button onClick={() => handleEditOpen(product)}>Update</button>
+
+        
+                <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.productName}     </td>
+                <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.description}     </td>
+                <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.category}        </td>
+                <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.price}           </td>
+                <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.availableSizes}  </td>
+                <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.availableColors} </td>
+                <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.materialType}    </td>
+
+                <td 
+                style={{ justifyContent : "center",width : "1px" ,borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}
+                >
+
+                  <button onClick={() => handleDeleteProduct(product._id)}><DeleteForeverOutlinedIcon /></button>
+                  <button onClick={() => handleEditOpen(product)}><ModeEditIcon /> </button>
 
                 </td>
+               
               </tr>
             ))}
           </tbody>
@@ -242,346 +302,313 @@ const handleUpdateProduct = async (productId) => {
             marginLeft: "530px",
             cursor: "pointer",
             marginTop: "30px",
-            marginLeft  : "600px",
+            marginLeft: "600px",
             borderColor: "rgba(255, 153, 153)",
           }}
         >
           Add Product
         </Button>
-
-      
         <Dialog open={open} onClose={handleClose}>
+
           <DialogTitle>Add Product</DialogTitle>
-          
+
           <Avatar
-                    sx={{ width: 100, height: 100, mx: "auto", mb: 2 }}
-                    src={selectedImage ? URL.createObjectURL(selectedImage) : ""}
-                    alt="Profile"
-                />      
+            sx={{ width: 100, height: 100, mx: "auto", mb: 2 }}
+            src={formik.values.image ? URL.createObjectURL(formik.values.image) : ""}
+            alt="Profile"
+          />
 
 
-<input
-              accept="image/*"
-              id="image-upload"
-              type="file"
-              style={{ display: "none" }}
-              onChange={handleImageChange}
-            />
-            <label htmlFor="image-upload">
+          <input
+            accept="image/*"
+            id="image-upload"
+            type="file"
+            style={{ display: "none" }}
+            onChange={handleImageChange}
+          />
+          <label htmlFor="image-upload">
             <Button
-  sx={{
-    marginLeft: 24,
-    backgroundColor: 'rgba(255, 153, 153)', 
-    color: '#fff', 
-    '&:hover': {
-      backgroundColor: 'rgba(255, 153, 153)', 
-    },
-  }}
-  component="span"
->
-  Upload Image
-</Button>
-            </label>
-                  <DialogContent>
+              sx={{
+                marginLeft: 24,
+                backgroundColor: 'rgba(255, 153, 153)',
+                color: '#fff',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 153, 153)',
+                },
+              }}
+              component="span"
+            >
+              Upload Image
+            </Button>
+          </label>
+          <DialogContent>
             <TextField
-              autoFocus
               margin="dense"
               id="productName"
+              name="productName"
               label="Product Name"
               fullWidth
               variant="standard"
+              value={formik.values.productName}
+              onChange={formik.handleChange}
+              error={formik.touched.productName && Boolean(formik.errors.productName)}
+              helperText={formik.touched.productName && formik.errors.productName}
             />
             <TextField
               margin="dense"
               id="description"
+              name="description"
               label="Description"
               fullWidth
               variant="standard"
+              value={formik.values.description}
+              onChange={formik.handleChange}
+              error={formik.touched.description && Boolean(formik.errors.description)}
+              helperText={formik.touched.description && formik.errors.description}
             />
+            <InputLabel id="category">Category</InputLabel>
+            <Select
+              autoFocus
+              margin="dense"
+              id="category"
+              name="category"
+              label="Category"
+              fullWidth
+              variant="standard"
+              multiple
+              value={formik.values.category}
+              onChange={(event) => {
+                formik.setFieldValue('category', event.target.value);
+              }}
+              error={formik.touched.category && Boolean(formik.errors.category)}
+              helperText={formik.touched.category && formik.errors.category}
+            >
+              {categories.map((item, index) => (
+                <MenuItem key={index} value={item.category}>
+                  {item.category}
+                </MenuItem>
+              ))}
+            </Select>
 
-
-<InputLabel id="category">Category</InputLabel>
-<Select
- autoFocus
- margin="dense"
-    id="category"
-    label="categorylabel"
-    fullWidth
-    labelId="category"
-    variant="standard"
-    defaultValue=""
-    multiple
-    value={selectedCategory}
-    onChange={(event) => setSelectedCategory(event.target.value)}>
-  
-    {categories.map((item,index) => (
-      <MenuItem key={index} value={item.category}>
-        {item.category}
-      </MenuItem>
-
-    ))}
-  </Select>
 
             <TextField
               margin="dense"
               id="price"
+              name="price"
               label="Price"
               fullWidth
               variant="standard"
+              value={formik.values.price}
+              onChange={formik.handleChange}
+              error={formik.touched.price && Boolean(formik.errors.price)}
+              helperText={formik.touched.price && formik.errors.price}
             />
-            {/* <TextField
+            <InputLabel id="availableaSizes">Size</InputLabel>
+            <Select
+              autoFocus
               margin="dense"
               id="availableSizes"
+              name="availableSizes"
               label="Available Sizes"
               fullWidth
               variant="standard"
-            /> */}
-
-
-
-<InputLabel id="availableaSizes">Size</InputLabel>
-<Select
-  autoFocus
-  margin="dense"
-  id="availableSizes"
-  label="Size"
-  fullWidth
-  labelId="availableSizes"
-  variant="standard"
-  value={selectedSize}
-  multiple
-  onChange={(event) => setSelectedSize(event.target.value)}>
-  {size.map((item,index) => (
-    <MenuItem key={index} value={item.size}>
-      {item.size}
-    </MenuItem>
-  ))}
-</Select>
+              multiple
+              value={formik.values.availableSizes}
+              onChange={(event) => {
+                formik.setFieldValue('availableSizes', event.target.value);
+              }}
+              error={formik.touched.availableSizes && Boolean(formik.errors.availableSizes)}
+              helperText={formik.touched.availableSizes && formik.errors.availableSizes}
+            >
+              {size.map((item, index) => (
+                <MenuItem key={index} value={item.size}>
+                  {item.size}
+                </MenuItem>
+              ))}
+            </Select>
 
             <TextField
               margin="dense"
               id="availableColors"
-              label="Available Colors"
+              name="availableColors"
+              label="available Colors"
               fullWidth
               variant="standard"
+              value={formik.values.availableColors}
+              onChange={formik.handleChange}
+              error={formik.touched.availableColors && Boolean(formik.errors.availableColors)}
+              helperText={formik.touched.availableColors && formik.errors.availableColors}
             />
             <TextField
               margin="dense"
               id="materialType"
+              name="materialType"
               label="Material Type"
               fullWidth
               variant="standard"
+              value={formik.values.materialType}
+              onChange={formik.handleChange}
+              error={formik.touched.materialType && Boolean(formik.errors.materialType)}
+              helperText={formik.touched.materialType && formik.errors.materialType}
             />
-           
+
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
-            <Button
-              onClick={() => {
-                
-                const formData = new FormData();
-                formData.append("productName",      document.getElementById("productName").value);
-                formData.append("description",      document.getElementById("description").value);
-                formData.append("price",            document.getElementById("price").value);
-                formData.append("availableColors",  document.getElementById("availableColors").value);
-                formData.append("materialType",     document.getElementById("materialType").value);
-                formData.append('image',            selectedImage);
-                formData.append("availableSizes",   selectedSize);
-                formData.append("category",         selectedCategory);
+            <Button onClick={formik.handleSubmit}>Add</Button>
 
-               
-                handleAddProduct(formData);
-              }}
-            >
-            Add
-            </Button>
           </DialogActions>
         </Dialog>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         <Dialog open={editOpen} onClose={handleEditClose}>
-                    <DialogTitle>Update Product</DialogTitle>
-          
+          <DialogTitle>Update Product</DialogTitle>
           <Avatar
-                    sx={{ width: 100, height: 100, mx: "auto", mb: 2 }}
-                    src={selectedImage ? URL.createObjectURL(selectedImage) : ""}
-                    alt="Profile"
-                />      
+  sx={{ width: 100, height: 100, mx: "auto", mb: 2 }}
+  src={
+    selectedImage && selectedImage.type && selectedImage.type.startsWith('image/')
+      ? URL.createObjectURL(selectedImage)
+      : (currentProduct && currentProduct.image ? `${apiUrl}/upload/images/${currentProduct.image}` : "")
+  }
+  alt="Profile"
+/>
 
-
-<input
-              accept="image/*"
-              id="image-upload"
-              type="file"
-              style={{ display: "none" }}
-              onChange={handleImageChange}
-            />
-            <label htmlFor="image-upload">
+          <input
+            accept="image/*"
+            id="image-upload"
+            type="file"
+            style={{ display: "none" }}
+            onChange={handleImageChange}
+          />
+          <label htmlFor="image-upload">
             <Button
-  sx={{
-    marginLeft: 24,
-    backgroundColor: 'rgba(255, 153, 153)', // Adjust the color as needed
-    color: '#fff', // Text color
-    '&:hover': {
-      backgroundColor: 'rgba(255, 153, 153)', // Hover color
-    },
-  }}
-  component="span"
->
-  Upload Image
-</Button>
-            </label>
-                  <DialogContent>
+              sx={{
+                marginLeft: 24,
+                backgroundColor: 'rgba(255, 153, 153)',
+                color: '#fff',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 153, 153)',
+                },
+              }}
+              component="span"
+            >
+              Upload Image
+            </Button>
+          </label>
+          <DialogContent>
             <TextField
               autoFocus
               margin="dense"
               id="productName"
+              name="productName"
               label="Product Name"
               fullWidth
               variant="standard"
+              value={formik.values.productName}
+              onChange={formik.handleChange}
             />
+
             <TextField
+              autoFocus
               margin="dense"
               id="description"
+              name="description"
               label="Description"
               fullWidth
               variant="standard"
+              value={formik.values.description}
+              onChange={formik.handleChange}
             />
 
-
-<InputLabel id="category">Category</InputLabel>
-<Select
- autoFocus
- margin="dense"
-    id="category"
-    label="categorylabel"
-    fullWidth
-    labelId="category"
-    variant="standard"
-    defaultValue=""
-    multiple
-    value={selectedCategory}
-    onChange={(event) => setSelectedCategory(event.target.value)}>
-  
-    {categories.map((item,index) => (
-      <MenuItem key={index} value={item.category}>
-        {item.category}
-      </MenuItem>
-
-    ))}
-  </Select>
+            <InputLabel id="category">Category</InputLabel>
+            <Select
+              autoFocus
+              margin="dense"
+              id="category"
+              label="Category"
+              fullWidth
+              variant="standard"
+              multiple
+              value={formik.values.category}
+              onChange={(event) => {
+                formik.setFieldValue('category', event.target.value);
+              }}
+              error={formik.touched.category && Boolean(formik.errors.category)}
+              helperText={formik.touched.category && formik.errors.category}
+            >
+              {categories.map((item, index) => (
+                <MenuItem key={index} value={item.category}>
+                  {item.category}
+                </MenuItem>
+              ))}
+            </Select>
 
             <TextField
+              autoFocus
               margin="dense"
               id="price"
-              label="Price"
+              name="price"
+              label="price"
               fullWidth
               variant="standard"
+              value={formik.values.price}
+              onChange={formik.handleChange}
             />
-            {/* <TextField
+
+            <InputLabel id="availableaSizes">Size</InputLabel>
+            <Select
+              autoFocus
               margin="dense"
               id="availableSizes"
-              label="Available Sizes"
+              label="Size"
               fullWidth
               variant="standard"
-            /> */}
-
-
-
-<InputLabel id="availableaSizes">Size</InputLabel>
-<Select
-  autoFocus
-  margin="dense"
-  id="availableSizes"
-  label="Size"
-  fullWidth
-  labelId="availableSizes"
-  variant="standard"
-  value={selectedSize}
-  multiple
-  onChange={(event) => setSelectedSize(event.target.value)}>
-  {size.map((item,index) => (
-    <MenuItem key={index} value={item.size}>
-      {item.size}
-    </MenuItem>
-  ))}
-</Select>
+              multiple
+              value={formik.values.availableSizes}
+              onChange={(event) => {
+                formik.setFieldValue('availableSizes', event.target.value);
+              }}
+              error={formik.touched.availableSizes && Boolean(formik.errors.availableSizes)}
+              helperText={formik.touched.availableSizes && formik.errors.availableSizes}
+              
+            >
+              {size.map((item, index) => (
+                <MenuItem key={index} value={item.size}>
+                  {item.size}
+                </MenuItem>
+              ))}
+            </Select>
 
             <TextField
+              autoFocus
               margin="dense"
               id="availableColors"
+              name="availableColors"
               label="Available Colors"
               fullWidth
               variant="standard"
+              value={formik.values.availableColors}
+              onChange={formik.handleChange}
             />
+
             <TextField
+              autoFocus
               margin="dense"
               id="materialType"
-              label="Material Type"
+              name="materialType"
+              label="material Type"
               fullWidth
               variant="standard"
+              value={formik.values.materialType}
+              onChange={formik.handleChange}
             />
-           
+
           </DialogContent>
           <DialogActions>
             <Button onClick={handleEditClose}>Cancel</Button>
-            <Button
-              onClick={() => {
-                
-                // const formData = new FormData();
-                // formData.append("productName",      document.getElementById("productName").value);
-                // formData.append("description",      document.getElementById("description").value);
-                // formData.append("price",            document.getElementById("price").value);
-                // formData.append("availableColors",  document.getElementById("availableColors").value);
-                // formData.append("materialType",     document.getElementById("materialType").value);
-                // formData.append('image',            selectedImage);
-                // formData.append("availableSizes",   selectedSize);
-                // formData.append("category",         selectedCategory);
-
-
-                
-               
-                handleUpdateProduct(formData);
-              }}
-            >
-            Update
-            </Button>
+            <Button onClick={formik.handleSubmit}>Update</Button>
           </DialogActions>
         </Dialog>
       </div>
     </>
   );
 }
-
-

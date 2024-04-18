@@ -30,7 +30,7 @@ function ChangePass() {
     }
 
     const initialValues = {
-        oldPassword: "",
+        oldPassword : "",
         newPassword : ""
     };
     const handleFormSubmit = async (values) => {

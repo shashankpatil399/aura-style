@@ -11,9 +11,10 @@ productName : {
 description : { 
     type : String
 },
-price : { 
-    type : String
-},
+price: {
+    type: Number,
+    required: true,
+  },
 availableSizes  : { 
     type : String
 },

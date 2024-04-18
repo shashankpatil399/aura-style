@@ -3,34 +3,45 @@ import Axios from 'axios';
 import { Typography, Container, Grid, Box, Button, TextField, Avatar } from '@mui/material';
 import HeaderBar from './HeaderBar';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 function Profile() {
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [editMode, setEditMode] = useState(false);
-  const [updatedProfile, setUpdatedProfile] = useState(null);
+  const [profile,        setProfile]         = useState(null);
+  const [loading,        setLoading]         = useState(true);
+  const [editMode,       setEditMode]        = useState(false);
+  const [updatedProfile, setUpdatedProfile]  = useState(null);
+  const [selectedImage,  setSelectedImage]   = useState(null);
+  
+  console.log("updateIMage",updatedProfile);
+  
+  const token = localStorage.getItem('token');
+
+  const fetchProfile = async () => {
+    try {
+      const response = await Axios.get('http://localhost:8040/profile', {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        }
+      });
+
+      if (response.data) {
+        setProfile(response.data);
+        setUpdatedProfile(response.data);
+        setLoading(false);
+      } else {
+        console.error("No profile data received from the server.");
+      }
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    Axios.get('http://localhost:8040/profile', {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": token
-      }
-    })
-      .then((res) => {
-        if (res.data) {
-          setProfile(res.data);
-          setUpdatedProfile(res.data); 
-          setLoading(false);
-        } else {
-          console.error("No profile data received from the server.");
-        }
-      })
-      .catch(error => {
-        console.error("Error fetching profile data:", error);
-        setLoading(false);
-      });
+    fetchProfile();
   }, []);
+  
 
   // const handleSubmit = async (event) => {
   //   console.log(event.target.value);
@@ -41,32 +52,73 @@ function Profile() {
     setEditMode(true);
   };
 
-  const handleUpdate = () => {
-    const token = localStorage.getItem('token');
-    Axios.post('http://localhost:8040/updateone', updatedProfile, {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": token
-      }
-    })
-      .then((res) => {
-        if (res.data) {
-          setProfile(res.data);
-          setUpdatedProfile(res.data);
-          setEditMode(false);
-        } else {
-          console.error("No updated profile data received from the server.");
-        }
-      })
-      .catch(error => {
-        console.error("Error updating profile data:", error);
-      });
-  };
+  // const handleChange = (e) => {
+  //   const { name, value, files } = e.target;
+  
+  //   if (name === 'profileImage') {
+  //     setUpdatedProfile({ ...updatedProfile, profileImage: files[0] });
+  //   } else {
+  //     setUpdatedProfile({ ...updatedProfile, [name]: value });
+  //   }
+  // };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUpdatedProfile({ ...updatedProfile, [name]: value });
   };
+  
+
+
+  const handleImageChange = (event) => {
+    setSelectedImage(event.target.files[0]);
+}
+  
+  const handleUpdate = async () => {
+    try {
+        const formData = new FormData();
+        formData.append('firstName', updatedProfile.firstName);
+        formData.append('lastName', updatedProfile.lastName);
+        formData.append('emailId', updatedProfile.emailId);
+        formData.append('mobileNo', updatedProfile.mobileNo);
+        // formData.append('password', values.password);
+        // formData.append('confirmPassword', values.confirmPassword);
+        formData.append('image', selectedImage);
+
+        const token = localStorage.getItem('token');
+
+        const response = await Axios.post(`${apiUrl}/updateProfile`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization": token
+          }
+        });
+        if (response.data) {
+          setProfile(response.data);
+          setUpdatedProfile(response.data);
+          setEditMode(false);
+          window.location.reload()
+      
+          // Fetch updated profile data
+          fetchProfile();
+        } else {
+            console.log('Invalid credentials or unexpected response status:', response.status);
+        }
+    } catch (error) {
+        // toast.error("User Already Register")
+        console.error('Error:', error);
+    } 
+};
+
+  // const handleChange = (e) => {
+  //   const { name, value, files } = e.target;
+    
+  //   if (name === 'profileImage') {
+  //     setUpdatedProfile({ ...updatedProfile, [name]: files[0] });
+  //   } else {
+  //     setUpdatedProfile({ ...updatedProfile, [name]: value });
+  //   }
+  // };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -109,16 +161,16 @@ function Profile() {
                   Profile Image:
                 </Typography>
                 {editMode ? (
-                  <input
-                    accept="image/*"
-                    id="contained-button-file"
-                    multiple
-                    type="file"
-                    onChange={handleChange}
-                  />
-                ) : (
-                  <Avatar alt="Profile Image" src={profile.image} />
-                )}
+  <input
+    accept="image/*"
+    id="contained-button-file"
+    name="profileImage"
+    type="file"
+    onChange={handleImageChange}
+  />
+) : (
+<Avatar alt="Profile Image" src={`http://localhost:8040/upload/images/${profile.image}`} />
+)}
               </Box>
             </Grid>
 
