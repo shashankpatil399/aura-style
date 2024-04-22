@@ -175,7 +175,6 @@
 // }
 
 
-
 import React, { useEffect, useState } from "react";
 
 import axios from "axios";
@@ -220,7 +219,7 @@ export default function Login() {
     };
     const handleRolechange =  (event) =>{
         setRole(event.target.value);
-    }
+    } 
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
             const dataToSend = {
@@ -348,8 +347,8 @@ export default function Login() {
                                              onChange={handleRolechange}                            
                                         >
                                             <MenuItem value="user">User</MenuItem>
-                                            <MenuItem value="Admin">Admin</MenuItem>
-                                            <MenuItem value="subadmin">SubAdmin</MenuItem>
+                                            <MenuItem value="admin">Admin</MenuItem>
+                                            <MenuItem value="subAdmin">SubAdmin</MenuItem>
                                         </Select>
                                     </FormControl>
                                 </Grid>  

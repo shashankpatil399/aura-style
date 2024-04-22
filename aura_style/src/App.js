@@ -52,27 +52,26 @@ import Category from './components/category';
 import Product from './components/Product';
 import Size from './components/size';
 import GetProductName from './components/getProductName';
-
+import SubAdmin from './components/subAdmin';
 
 const routes = [
   {
     path: '/',
     // element: <ProtectedRoute element={<Dashboard />} />,
     children: [
-      { path: 'Dashboard', element: <Dashboard /> },
+      
+      { path: 'SubAdmin', element: <SubAdmin/> },
 
-      { path: 'Size', element: <Size /> },
-      { path: 'product', element: <Product /> },
-      { path: 'category', element: <Category /> },
+      { path: 'Dashboard', element: <Dashboard/> },
+      { path: 'Size', element: <Size/> },
+      { path: 'product', element: <Product/> },
+      { path: 'category', element: <Category/> },
       { path: 'admin', element: <Admin /> },
       { path: 'Update/:id', element: <Update /> },
       { path: 'profile', element: <Profile /> },
       { path: 'HeaderBar', element: <HeaderBar /> },
       { path: 'ChangePass', element: <ChangePass /> },
       { path: '/product/:productName', element: <GetProductName /> },
-
-
-
     ]
   },
  

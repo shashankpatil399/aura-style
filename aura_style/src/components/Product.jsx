@@ -16,7 +16,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-
+import DialogContentText from '@mui/material/DialogContentText';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -24,12 +24,14 @@ export default function Product() {
   const [list, setList] = useState([]);
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(null);
+  const [deletepro, setDeletePro] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [categories, setCategories] = useState([]);
   const [size, setSize] = useState([]);
   // const [selectedSize, setSelectedSize] = useState([]);
   // const [selectedCategory, setSelectedCategory] = useState([]);
   const [currentProduct, setCurrentProduct] = useState(null);
+  
 
   const validationSchema = Yup.object({
     productName: Yup.string().required('Product Name is required'),
@@ -52,7 +54,6 @@ export default function Product() {
       category: currentProduct ? currentProduct.category : [],
       availableSizes: currentProduct ? currentProduct.availableSizes : [],
       image: null,
-      
     },
 
     validationSchema: validationSchema,
@@ -96,6 +97,17 @@ export default function Product() {
     setEditOpen(true);
   };
 
+  const hnadleDelete = (productId) => {
+    console.log("Selected Product:", productId);
+    setCurrentProduct(productId);
+    setDeletePro(true)
+  }
+
+  const handleCancel = () => {
+  setDeletePro(false)
+
+  }
+
 
   useEffect(() => {
     if (currentProduct) {
@@ -105,8 +117,9 @@ export default function Product() {
         price: currentProduct.price,
         availableColors: currentProduct.availableColors,
         materialType: currentProduct.materialType,
-         category: currentProduct.category.split(','), // Split the string into an array
-      availableSizes: currentProduct.availableSizes.split(','), // S
+        category: currentProduct.category ? currentProduct.category.split(',') : [],
+        availableSizes: currentProduct.availableSizes ? currentProduct.availableSizes.split(',') : [],
+        
       });
     }
   }, [currentProduct]);
@@ -167,6 +180,7 @@ const handleImageChange = (event) => {
     try {
       const url = `${apiUrl}/deleteProduct/${productId}`;
       const response = await axios.delete(url);
+      setDeletePro(false)
 
       if (response.data.status === 200) {
         fetchData();
@@ -215,7 +229,7 @@ const handleImageChange = (event) => {
       console.error("Data not found", error);
     }
   };
-  
+
   const fetchDescData = async () => {
     try {
       const res = await axios.get(`${apiUrl}/sortProduct?sort=desc`);
@@ -267,8 +281,6 @@ const handleImageChange = (event) => {
   />
 )}
                 </td>
-
-        
                 <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.productName}     </td>
                 <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.description}     </td>
                 <td style={{ padding: '8px', borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}>{product.category}        </td>
@@ -281,8 +293,11 @@ const handleImageChange = (event) => {
                 style={{ justifyContent : "center",width : "1px" ,borderColor: 'rgba(255, 153, 153)', borderBottom: '5px solid rgba(255, 153, 153)' }}
                 >
 
-                  <button onClick={() => handleDeleteProduct(product._id)}><DeleteForeverOutlinedIcon /></button>
-                  <button onClick={() => handleEditOpen(product)}><ModeEditIcon /> </button>
+                  {/* <button onClick={() => handleDeleteProduct(product._id)}><DeleteForeverOutlinedIcon /></button> */}
+
+
+                  <button onClick={() => hnadleDelete(product)}><DeleteForeverOutlinedIcon /> </button>
+                  <button onClick={() => handleEditOpen(product)}><ModeEditIcon />                </button>
 
                 </td>
                
@@ -290,7 +305,33 @@ const handleImageChange = (event) => {
             ))}
           </tbody>
         </table>
-      </div>
+  
+    </div>
+<div>
+    <Dialog
+      open={deletepro}
+      onClose={handleCancel}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">{"Delete Product"}</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Are you sure you want to delete this product?
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCancel} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={() => handleDeleteProduct(currentProduct._id)} color="primary" autoFocus>
+  Confirm Delete
+</Button>
+      </DialogActions>
+    </Dialog>
+
+    </div>
+
 
       <div>
         <Button

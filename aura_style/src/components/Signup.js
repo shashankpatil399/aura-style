@@ -218,29 +218,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import axios from "axios";
@@ -250,7 +227,9 @@ import * as Yup from 'yup';
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 
+
 const apiUrl = process.env.REACT_APP_API_URL;
+
 
 const validationSchema = Yup.object().shape({
     firstName: Yup.string().required('First Name is required'),
@@ -267,6 +246,8 @@ const validationSchema = Yup.object().shape({
                 return ['com', 'org', 'net'].includes(domainExtension.toLowerCase());
             }
         ),
+
+
     mobileNo: Yup.string()
         .matches(/^[0-9]+$/, 'Must be only digits')
         .required('Mobile No. is required'),
@@ -275,9 +256,11 @@ const validationSchema = Yup.object().shape({
     role: Yup.string().required('Role is required'), // Add role validation
 });
 
+
 const ValidationMessage = ({ children }) => (
     <span style={{ color: 'red' }}>{children}</span>
 );
+
 
 export default function Signup() {
     const navigate = useNavigate();
@@ -291,7 +274,7 @@ export default function Signup() {
         image: null,
         password: "",
         confirmPassword: "",
-        role: "user", // default role
+        role: "user",   
     };
 
     const handleImageChange = (event) => {
@@ -445,7 +428,7 @@ export default function Signup() {
                                     >
                                         <option value="user">User</option>
                                         <option value="admin">Admin</option>
-                                        <option value="subadmin">Subadmin</option>
+                                        <option value="subAdmin">SubAdmin</option>
                                     </Field>
                                     <ErrorMessage name="role" component={ValidationMessage} />
                                 </Grid>

@@ -14,6 +14,7 @@ const sizeController =    require("../controllers/sizeController")
 const addCategoriesController = require("../controllers/addcategoriesController")
 
 router.post('/Signup',
+
 [
     // Validation middleware
     body('firstName').notEmpty().withMessage('First name is required'),

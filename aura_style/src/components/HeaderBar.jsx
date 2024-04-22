@@ -27,7 +27,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import Axios from 'axios';
 
-
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const drawerWidth = 240;
@@ -41,7 +40,6 @@ const openedMixin = (theme) => ({
   backgroundColor: 'rgb(255, 153, 153, 1.5)'
 });
 
-
 const closedMixin = (theme) => ({
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -49,11 +47,18 @@ const closedMixin = (theme) => ({
   }),
 
   overflowX: 'hidden',
+
   width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
+
+  [
+    theme.breakpoints.up('sm')]: {
+
+    width:`calc(${theme.spacing(8)} + 1px)`,
+
   },
+
   backgroundColor: 'rgb(255, 153, 153, 1.5)',
+
 });
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -103,7 +108,34 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function HeaderBar() {
 
   const [openSublist, setOpenSublist] = useState(false);
+  const [admins, setAdmins] = useState(null);
 
+
+
+  const token = localStorage.getItem('token');
+
+  const fetchProfile = async () => {
+    try {
+      const response = await Axios.get('http://localhost:8040/profile', {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        }
+      });
+
+      if (response.data) {
+        setAdmins(response.data);
+      } else {
+        console.error("No profile data received from the server.");
+      }
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchProfile();
+  }, []);
   const handleClick = () => {
     setOpenSublist(!openSublist);
   };
@@ -152,6 +184,7 @@ export default function HeaderBar() {
         if (res.data) {
           setProfile(res.data);
           setLoading(false);
+
         } else {
           console.error("No profile data received from the server.");
         }
@@ -160,16 +193,13 @@ export default function HeaderBar() {
         console.error("Error fetching profile data:", error);
 
       });
+      
   }, []);
 
-  if (loading) {
-    return <div>Loadin</div>;
-  }
 
-  // if (!profile) {
-  //   return <div>No profile data available.</div>;
-  // }
-
+const datars = admins.role
+ 
+if(datars === "admin"){
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -414,4 +444,235 @@ export default function HeaderBar() {
       <DrawerHeader />
     </Box>
   );
+              }
+
+else{
+
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar position="fixed" open={open}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              ...(open && { display: 'none' }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h4" style={{ fontFamily: "'Ojuju', sans-serif" }}>
+            <div onClick={dash}>Aura style</div>
+          </Typography>
+          <Toolbar sx={{ marginLeft: 'auto' }}>
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ marginLeft: ' 0 auto' }}>
+                  <Avatar alt="Remy Sharp" src={`${apiUrl}/upload/images/${profile.image}`} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem component={Link} to="/Profile" onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">Profile</Typography>
+                </MenuItem>
+                <MenuItem component={Link} to="/ChangePass" onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">Change Password</Typography>
+                </MenuItem>
+                <MenuItem onClick={LogoutApi}>
+                  <Typography textAlign="center">Logout</Typography>
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Toolbar>
+        </Toolbar>
+      </AppBar>
+      <Drawer variant="permanent" open={open}>
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/dashboard"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Dashboard" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/subAdmin"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="SubAdmin" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+          
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/category"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Category" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/Size"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Sizes" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+         
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/product"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Products" sx={{ opacity: open ? 1 : 0 }} />
+            
+            
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              component={Link}
+              to="/Orders"
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+                maxHeight: 100,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                  maxHeight: 100,
+                }}
+              >
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Orders" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+        </List>
+        <Divider />
+      </Drawer>
+      <DrawerHeader />
+    </Box>
+  );
+
+
 }
+
+
+            }
+
+
