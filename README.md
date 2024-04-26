@@ -1,39 +1,153 @@
-const express require('express')
+mdes
 
-const app express()
+index.htm
 
-const server require("http').createServer(a);
+index.html X
 
-node module
+inde
 
-debug.log
+DOCTYPE Mal
 
-index.html
+thoa lang-en
 
-const besacket-require();
+head
 
-WebSocket.Server serversserver 131
+arta charset="UTF-8"
 
-Findex Mml
+света паме "иблuport" content-width-device-width, initial-scale-3.0
 
-wss.on('connection", function connection(ws) [ console.log("A new client Connected!"); w.send("lcome Client);
+Title Socket Thingititias
 
-package ludujoon
+EXPSCALE
 
-11 34 ws.on("message", function Incoming(message)
+inde
 
-console.log(received: s', message); us.send(Get gits)
+E index2.htm
 
-get (req, res) send( Hellwert
+WEE SOORTE node modules
 
-10
+debuging
+
+indext
+
+shady
+
+inde
+
+index2.html
+
+package-lockse packagajton
+
+mey
 
 17
 
-));
+12
 
-م
+11
+
+16
+
+Clienti
+
+cbutton Send gc/butto
+
+17 Dreate wensocket comectice.
+
+const socket MehSachatws://localhost:3000
+
+11. Connection opened
+
+socket.addEventListener('open', function (event) ( console.log('Connected to Server')
+
+If State for messages
+
+19
+
+H
+
+28
 
 21
 
-23 sarver listen(a, () console.log("Lisaning on port 2000"))
+22
+
+socket addEventListener('message', function (event) ( console.log(message from server, event.data);
+
+23
+
+24
+
+});
+
+25
+
+26
+
+enst sendessage()(
+
+socket.send(Helle From Client)
+
+</script>
+
+</html>
+
+Mal
+
+hallangen
+
+heet
+
+charset
+
+света паведаuport content width-device-width, initial-scale-3.0
+
+Title Socket Thingsrities
+
+head
+
+bouly
+
+19
+
+client2
+
+Button onclick")"Send gutt
+
+11 Create websocket connectice
+
+const socketMehSocketws://localhost:
+
+13. Comestion spered
+
+socket.addEventListener('open', function (event) ( console.log('Comected to Server')
+
+TEL
+
+Listen for messages
+
+sockert addEventListener("message", function (event) ( console.log(massage from server, event.data);
+
+16
+
+17
+
+21
+
+22
+
+23
+
+24
+
+25
+
+26
+
+at sendhessage()(
+
+socket.send(Hello From Elient21');
+
+</script>
+
+</html
