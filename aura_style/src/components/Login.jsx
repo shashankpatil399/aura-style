@@ -185,6 +185,11 @@ import { useNavigate, Link } from "react-router-dom";
 import { toast } from 'react-toastify';
 import { useDispatch } from "react-redux";
 import { loginFailure, loginSuccess } from "../redux/authSlice";
+import Layout from "./Layout";
+
+
+
+
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -200,7 +205,8 @@ export default function Login() {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [role,setRole] = useState("select")
+    const [role,setRole] = useState("admin")
+const isAuthenticated = false;
 
     console.log("role",role);
 
@@ -278,6 +284,8 @@ export default function Login() {
 
     return (
         <Container maxWidth="xs" style={{ backgroundColor: '#f0f0f0', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <Layout isAuthenticated={isAuthenticated} role={role}/>
+
             <Box sx={{
                 boxShadow: '0px 5px 15px 0px rgba(0,0,0,0.9)',
                 p: 7,
@@ -340,16 +348,18 @@ export default function Login() {
                                     <FormControl fullWidth>
                                         <InputLabel id="role-label">Role</InputLabel>
                                         <Select
-                                            labelId="role-label"
-                                            id="role"
-                                            name="role"
-                                             value={role}
-                                             onChange={handleRolechange}                            
-                                        >
-                                            <MenuItem value="user">User</MenuItem>
-                                            <MenuItem value="admin">Admin</MenuItem>
-                                            <MenuItem value="subAdmin">SubAdmin</MenuItem>
-                                        </Select>
+    labelId="role-label"
+    id="role"
+    name="role"
+    value={role}
+    onChange={handleRolechange}    
+    defaultValue="admin"
+>
+    <MenuItem value="user">User</MenuItem>
+    <MenuItem value="admin">Admin</MenuItem>
+    <MenuItem value="subAdmin">SubAdmin</MenuItem>
+</Select>
+
                                     </FormControl>
                                 </Grid>  
                             </Grid>

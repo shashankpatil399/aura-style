@@ -15,6 +15,7 @@ const profile = async (req, res) => {
   }
 
 const updateProfile = async (req, res) => {
+  
   try {
     const userId = req.userId; 
     console.log("user",userId);

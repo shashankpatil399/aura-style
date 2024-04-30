@@ -118,8 +118,11 @@ const Signup = async (req, res) => {
       status: 500,
       message: "Error saving user",
       data: null,
+      
     });
+
   }
+
 };
 
 module.exports = { Signup };
